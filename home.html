@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المنظومة الأكاديمية المتكاملة | نظام إدارة الجامعة</title>
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Google Fonts - Cairo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+            color: #2d3436;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* تخصيص شريط التمرير */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46a0 100%);
+        }
+
+        /* الهيدر الرئيسي */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin: 0;
+            background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .logo p {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin: 0.5rem 0 0;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            display: block;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* شريط التنقل */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links a {
+            color: #4a5568;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 1.5rem 0;
+            display: block;
+            position: relative;
+            transition: color 0.3s;
+            font-size: 1rem;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 1rem;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a i {
+            margin-left: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge i {
+            font-size: 1.2rem;
+            color: #4a5568;
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e53e3e;
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+        }
+
+        /* المحتوى الرئيسي */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* بطاقات الترحيب */
+        .welcome-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .welcome-text h2 {
+            font-size: 1.8rem;
+            color: #2d3436;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-text p {
+            color: #636e72;
+            font-size: 1rem;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* أقسام الصفحة */
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #2d3436;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-right: 1rem;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 5px;
+        }
+
+        .section-title i {
+            color: #667eea;
+            margin-left: 1rem;
+        }
+
+        /* شبكة البطاقات */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .card h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #2d3436;
+        }
+
+        .card p {
+            color: #636e72;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .card-stats {
+            display: flex;
+            justify-content: space-between;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .card-stats span i {
+            margin-left: 0.3rem;
+        }
+
+        /* قسم القبول الإلكتروني */
+        .admission-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .admission-stages {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .stage-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .stage-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+
+        .stage-title {
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 0.5rem;
+        }
+
+        .stage-desc {
+            color: #636e72;
+            font-size: 0.9rem;
+        }
+
+        /* قسم تسجيل المواد */
+        .registration-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .table-row {
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .table-row:hover {
+            background: #f8f9fa;
+        }
+
+        .course-code {
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .course-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-open {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .status-closed {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+
+        .status-waiting {
+            background: #feebc8;
+            color: #c05621;
+        }
+
+        /* قسم الكنترولات */
+        .control-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            color: #636e72;
+            font-weight: 600;
+        }
+
+        .student-review {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-right: 5px solid #ffc107;
+        }
+
+        .student-review h5 {
+            font-weight: 700;
+            color: #856404;
+            margin-bottom: 0.5rem;
+        }
+
+        .review-details {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            color: #856404;
+            font-size: 0.9rem;
+        }
+
+        /* قسم التربية العسكرية */
+        .military-section {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        .military-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .military-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .military-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .group-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .capacity-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .capacity-fill {
+            height: 100%;
+            background: #4ade80;
+            border-radius: 4px;
+            width: 75%;
+        }
+
+        .payment-code {
+            background: white;
+            color: #2c3e50;
+            padding: 0.5rem;
+            border-radius: 10px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 1.2rem;
+            margin: 1rem 0;
+            direction: ltr;
+        }
+
+        /* قسم الاستبيانات */
+        .survey-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .survey-types {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .survey-type {
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            background: #f1f1f1;
+            color: #636e72;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .survey-type.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .survey-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .survey-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .survey-progress {
+            width: 200px;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 60%;
+        }
+
+        /* الفوتر */
+        .footer {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #a0aec0;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: #cbd5e0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background: #667eea;
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #a0aec0;
+        }
+
+        /* تحسينات للأجهزة المحمولة */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .header-stats {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .welcome-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .quick-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .table-header, .table-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .survey-item {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: start;
+            }
+        }
+
+        /* تأثيرات حركية */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fadeInUp {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        /* شارة جديدة */
+        .new-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: #fbbf24;
+            color: #92400e;
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <!-- الهيدر الرئيسي -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo" data-aos="fade-left">
+                <h1>الجامعة الأكاديمية</h1>
+                <p>نظام إدارة الطلاب المتكامل SIS + LMS</p>
+            </div>
+            <div class="header-stats" data-aos="fade-right">
+                <div class="stat-item">
+                    <span class="stat-number">15,234</span>
+                    <span class="stat-label">طالب</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">847</span>
+                    <span class="stat-label">عضو هيئة تدريس</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">3,421</span>
+                    <span class="stat-label">مادة دراسية</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- شريط التنقل -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="#home"><i class="fas fa-home"></i> الرئيسية</a></li>
+                <li><a href="#admission"><i class="fas fa-user-graduate"></i> القبول الإلكتروني</a></li>
+                <li><a href="#courses"><i class="fas fa-book"></i> المواد الدراسية</a></li>
+                <li><a href="#registration"><i class="fas fa-pen"></i> تسجيل المواد</a></li>
+                <li><a href="#control"><i class="fas fa-chart-line"></i> الكنترولات</a></li>
+                <li><a href="#military"><i class="fas fa-shield-alt"></i> التربية العسكرية</a></li>
+                <li><a href="#surveys"><i class="fas fa-poll"></i> الاستبيانات</a></li>
+            </ul>
+            <div class="user-menu">
+                <div class="notification-badge">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">5</span>
+                </div>
+                <div class="user-avatar">
+                    <span>أ.م</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="main-content">
+        <!-- بطاقة الترحيب -->
+        <section class="welcome-card" data-aos="fade-up">
+            <div class="welcome-text">
+                <h2>مرحباً بك في المنظومة الأكاديمية المتكاملة</h2>
+                <p>نظام موحد لإدارة الطلاب والتعلم الإلكتروني والكنترولات والخدمات الطلابية</p>
+            </div>
+            <div class="quick-actions">
+                <button class="btn btn-primary"><i class="fas fa-plus-circle"></i> تسجيل مواد</button>
+                <button class="btn btn-outline"><i class="fas fa-file-alt"></i> استبيانات</button>
+                <button class="btn btn-outline"><i class="fas fa-download"></i> تقارير</button>
+            </div>
+        </section>
+
+        <!-- نظام القبول الإلكتروني -->
+        <section id="admission" class="admission-section" data-aos="fade-up">
+            <h2 class="section-title"><i class="fas fa-user-graduate"></i> نظام القبول الإلكتروني متعدد المراحل</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>8,547</h4>
+                    <p>متقدم</p>
+                </div>
+                <div class="stat-card">
+                    <h4>3,210</h4>
+                    <p>مقبول</p>
+                </div>
+                <div class="stat-card">
+                    <h4>42%</h4>
+                    <p>نسبة القبول</p>
+                </div>
+                <div class="stat-card">
+                    <h4>1,245</h4>
+                    <p>قائمة الانتظار</p>
+                </div>
+            </div>
+
+            <div class="admission-stages">
+                <div class="stage-item">
+                    <div class="stage-number">1</div>
+                    <div class="stage-title">الفلترة المبدئية</div>
+                    <div class="stage-desc">استبعاد غير المستوفين للشروط الأساسية (مجموع، قدرات، مقابلات)</div>
+                </div>
+                <div class="stage-item">
+                    <div class="stage-number">2</div>
+                    <div class="stage-title">التوزيع حسب الرغبات</div>
+                    <div class="stage-desc">ترتيب تنازلي حسب المجموع وتطبيق قاعدة "أعلى مجموع يحصل على رغبته الأولى"</div>
+                </div>
+                <div class="stage-item">
+                    <div class="stage-number">3</div>
+                    <div class="stage-title">المراحل الزمنية</div>
+                    <div class="stage-desc">طلاب متفوقون - طلاب متوسطون - طلاب مؤهلون - إعادة توزيع</div>
+                </div>
+                <div class="stage-item">
+                    <div class="stage-number">4</div>
+                    <div class="stage-title">تأكيد القيد</div>
+                    <div class="stage-desc">إشعار ترشيح - فترة موافقة - سداد إلكتروني - إنشاء رقم جامعي</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <h3 style="margin-bottom: 1rem; color: #2d3436;">الطاقة الاستيعابية للكليات</h3>
+                <div style="display: grid; gap: 1rem;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>كلية الطب</span>
+                            <span>320 / 350</span>
+                        </div>
+                        <div style="width: 100%; height: 10px; background: #e9ecef; border-radius: 5px;">
+                            <div style="width: 91%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 5px;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>كلية الهندسة</span>
+                            <span>450 / 500</span>
+                        </div>
+                        <div style="width: 100%; height: 10px; background: #e9ecef; border-radius: 5px;">
+                            <div style="width: 90%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 5px;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>كلية الحاسبات</span>
+                            <span>380 / 400</span>
+                        </div>
+                        <div style="width: 100%; height: 10px; background: #e9ecef; border-radius: 5px;">
+                            <div style="width: 95%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 5px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- إدارة المواد الدراسية -->
+        <section id="courses" class="cards-grid" data-aos="fade-up">
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <h3>إضافة مادة جديدة</h3>
+                <p>إضافة مواد دراسية جديدة مع تحديد رمز المادة، اسم المادة، عدد الساعات، المستوى، القسم، والكلية</p>
+                <div class="card-stats">
+                    <span><i class="fas fa-clock"></i> آخر إضافة: اليوم</span>
+                    <span><i class="fas fa-layer-group"></i> 847 مادة</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-link"></i>
+                </div>
+                <h3>المتطلبات السابقة</h3>
+                <p>ربط المواد بالمتطلبات السابقة (إجباري، موازي، اختياري، شرط مجموعة) لمنع التسجيل العشوائي</p>
+                <div class="card-stats">
+                    <span><i class="fas fa-check-circle"></i> 1,234 رابط</span>
+                    <span><i class="fas fa-exclamation-triangle"></i> 23 بحاجة مراجعة</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-map"></i>
+                </div>
+                <h3>الخطط الدراسية</h3>
+                <p>تحديد المواد المطلوبة لكل مستوى وفصل دراسي مع إمكانية تحديد المجموعات الاختيارية</p>
+                <div class="card-stats">
+                    <span><i class="fas fa-calendar"></i> 12 برنامج</span>
+                    <span><i class="fas fa-layer-group"></i> 48 خطة</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- تسجيل المواد -->
+        <section id="registration" class="registration-table" data-aos="fade-up">
+            <div style="padding: 1.5rem; background: white; border-radius: 15px 15px 0 0;">
+                <h2 class="section-title" style="margin-bottom: 0;"><i class="fas fa-pen"></i> تسجيل المواد - الفصل الدراسي الربيع 2026</h2>
+            </div>
+            
+            <div class="table-header">
+                <div>رمز المادة</div>
+                <div>اسم المادة</div>
+                <div>عدد الساعات</div>
+                <div>الحالة</div>
+            </div>
+
+            <div class="table-row">
+                <div class="course-code">CS101</div>
+                <div>مقدمة في علوم الحاسب</div>
+                <div>3 ساعات</div>
+                <div><span class="course-status status-open"><i class="fas fa-check-circle"></i> متاح</span></div>
+            </div>
+
+            <div class="table-row">
+                <div class="course-code">MATH201</div>
+                <div>الرياضيات المتقطعة</div>
+                <div>4 ساعات</div>
+                <div><span class="course-status status-waiting"><i class="fas fa-clock"></i> قائمة انتظار</span></div>
+            </div>
+
+            <div class="table-row">
+                <div class="course-code">PHY102</div>
+                <div>الفيزياء العامة</div>
+                <div>3 ساعات</div>
+                <div><span class="course-status status-open"><i class="fas fa-check-circle"></i> متاح</span></div>
+            </div>
+
+            <div class="table-row">
+                <div class="course-code">ENG202</div>
+                <div>اللغة الإنجليزية</div>
+                <div>2 ساعة</div>
+                <div><span class="course-status status-closed"><i class="fas fa-times-circle"></i> مغلق</span></div>
+            </div>
+
+            <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 0 0 15px 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="font-weight: 700;">إجمالي الساعات المسجلة: 12 ساعة</span>
+                        <span style="margin-right: 2rem; color: #667eea;">الحد الأقصى: 18 ساعة</span>
+                    </div>
+                    <button class="btn btn-primary"><i class="fas fa-save"></i> تأكيد التسجيل</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- الإرشاد الأكاديمي -->
+        <section class="cards-grid" data-aos="fade-up">
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <h3>المرشدون الأكاديميون</h3>
+                <p>تعيين مرشد لكل طالب مع تحديد الحد الأقصى للطلاب تحت إشراف كل مرشد</p>
+                <div class="card-stats">
+                    <span><i class="fas fa-users"></i> 85 مرشد</span>
+                    <span><i class="fas fa-user-check"></i> 3,245 طالب</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3>الإنذارات الأكاديمية</h3>
+                <p>توليد تلقائي للإنذارات للطلاب ذوي المعدل المنخفض أو نسبة الرسوب المرتفعة</p>
+                <div class="card-stats">
+                    <span style="color: #e53e3e;"><i class="fas fa-bell"></i> 56 إنذار جديد</span>
+                    <span><i class="fas fa-check-circle"></i> 23 تمت متابعته</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>متابعة التسجيل</h3>
+                <p>متابعة حالة تسجيل الطلاب تحت إشراف كل مرشد والموافقة على الخطط الدراسية</p>
+                <div class="card-stats">
+                    <span><i class="fas fa-hourglass-half"></i> 342 في الانتظار</span>
+                    <span><i class="fas fa-check-double"></i> 1,234 تمت الموافقة</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- منظومة الكنترولات -->
+        <section id="control" class="control-panel" data-aos="fade-up">
+            <h2 class="section-title"><i class="fas fa-chart-line"></i> منظومة الكنترولات ورصد الدرجات</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>87%</h4>
+                    <p>نسبة إنجاز الرصد</p>
+                </div>
+                <div class="stat-card">
+                    <h4>24</h4>
+                    <p>مادة مكتملة</p>
+                </div>
+                <div class="stat-card">
+                    <h4>12.5%</h4>
+                    <p>نسبة الرسوب</p>
+                </div>
+                <div class="stat-card">
+                    <h4>23</h4>
+                    <p>التماسات</p>
+                </div>
+            </div>
+
+            <!-- مراجعة حالة الطالب -->
+            <div class="student-review">
+                <h5><i class="fas fa-user-graduate"></i> مراجعة حالة الطالب: أحمد محمد (20231234)</h5>
+                <div class="review-details">
+                    <span><i class="fas fa-history"></i> سبق تسجيل المادة: نعم (مرتين)</span>
+                    <span><i class="fas fa-star"></i> آخر نتيجة: 65% (مقبول) - خريف 2025</span>
+                    <span><i class="fas fa-redo-alt"></i> محاولة حالية: الثالثة</span>
+                    <span><i class="fas fa-exclamation-circle"></i> تنبيه: آخر محاولة مسموح بها</span>
+                </div>
+            </div>
+
+            <!-- إحصائيات المادة -->
+            <h3 style="margin: 2rem 0 1rem;">إحصائيات مادة CS101 - مقدمة في علوم الحاسب</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 10px;">
+                    <span style="font-size: 1.5rem; font-weight: 800; color: #667eea;">124</span>
+                    <span style="display: block; color: #636e72;">إجمالي الطلاب</span>
+                </div>
+                <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 10px;">
+                    <span style="font-size: 1.5rem; font-weight: 800; color: #48bb78;">98</span>
+                    <span style="display: block; color: #636e72;">ناجح</span>
+                </div>
+                <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 10px;">
+                    <span style="font-size: 1.5rem; font-weight: 800; color: #f56565;">26</span>
+                    <span style="display: block; color: #636e72;">راسب</span>
+                </div>
+                <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 10px;">
+                    <span style="font-size: 1.5rem; font-weight: 800; color: #ed8936;">79%</span>
+                    <span style="display: block; color: #636e72;">نسبة النجاح</span>
+                </div>
+            </div>
+
+            <!-- توزيع التقديرات -->
+            <div style="margin-bottom: 2rem;">
+                <h4 style="margin-bottom: 1rem;">توزيع التقديرات</h4>
+                <div style="display: grid; gap: 1rem;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                            <span>ممتاز (90-100)</span>
+                            <span>28 طالب</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #e9ecef; border-radius: 4px;">
+                            <div style="width: 23%; height: 100%; background: #48bb78; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                            <span>جيد جداً (80-89)</span>
+                            <span>35 طالب</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #e9ecef; border-radius: 4px;">
+                            <div style="width: 28%; height: 100%; background: #4299e1; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                            <span>جيد (70-79)</span>
+                            <span>22 طالب</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #e9ecef; border-radius: 4px;">
+                            <div style="width: 18%; height: 100%; background: #ecc94b; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                            <span>مقبول (60-69)</span>
+                            <span>13 طالب</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #e9ecef; border-radius: 4px;">
+                            <div style="width: 10%; height: 100%; background: #ed8936; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                            <span>راسب (أقل من 60)</span>
+                            <span>26 طالب</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #e9ecef; border-radius: 4px;">
+                            <div style="width: 21%; height: 100%; background: #f56565; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- إعادة الرصد والتعديلات -->
+            <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 15px;">
+                <h4 style="margin-bottom: 1rem;"><i class="fas fa-edit"></i> التماسات الطلاب وإعادة التصحيح</h4>
+                <div style="display: grid; gap: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border-bottom: 1px solid #e9ecef;">
+                        <div>
+                            <span style="font-weight: 700;">سارة خالد</span>
+                            <span style="color: #636e72; margin-right: 1rem;">CS101</span>
+                        </div>
+                        <div>
+                            <span style="color: #f56565;">الدرجة الحالية: 58%</span>
+                            <span style="color: #48bb78; margin-right: 1rem;">الملتمس: 65%</span>
+                            <button class="btn btn-primary" style="padding: 0.3rem 1rem; font-size: 0.85rem;">مراجعة</button>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border-bottom: 1px solid #e9ecef;">
+                        <div>
+                            <span style="font-weight: 700;">عمر حسن</span>
+                            <span style="color: #636e72; margin-right: 1rem;">MATH201</span>
+                        </div>
+                        <div>
+                            <span style="color: #f56565;">الدرجة الحالية: 52%</span>
+                            <span style="color: #48bb78; margin-right: 1rem;">الملتمس: 60%</span>
+                            <button class="btn btn-primary" style="padding: 0.3rem 1rem; font-size: 0.85rem;">مراجعة</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- نظام الرأفة -->
+        <section class="cards-grid" data-aos="fade-up">
+            <div class="card" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);">
+                <div class="card-icon" style="background: #d97706;">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3>نظام الرأفة - النظام السنوي</h3>
+                <p>تطبيق قواعد الرأفة للطلاب في النظام غير القائم على الساعات المعتمدة</p>
+                <div style="margin-top: 1rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>قاعدة 50%</span>
+                        <span>34 طالب</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>قاعدة 45%</span>
+                        <span>12 طالب</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>امتحان تكميلي</span>
+                        <span>23 طالب</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-file-excel"></i>
+                </div>
+                <h3>كشوف الراسبين</h3>
+                <p>تقرير مفصل بالطلاب الراسبين وعدد نقاط الرسوب وأسماء المواد</p>
+                <div style="margin-top: 1rem;">
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 10px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>محمد علي</span>
+                            <span>3 مواد: CS101, MATH201, PHY102</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>فاطمة أحمد</span>
+                            <span>مادتين: ENG202, CHEM101</span>
+                        </div>
+                        <button class="btn btn-outline" style="width: 100%; margin-top: 0.5rem;">عرض التقرير الكامل</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- الطلاب المحولين -->
+        <section class="cards-grid" data-aos="fade-up">
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <h3>الطلاب المحولين</h3>
+                <p>إضافة طلاب محولين من جامعات أخرى مع تسجيل المواد السابق دراستها</p>
+                <div class="card-stats">
+                    <span><i class="fas fa-users"></i> 87 طالب</span>
+                    <span><i class="fas fa-check-circle"></i> 342 مادة معادلة</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-balance-scale"></i>
+                </div>
+                <h3>معادلة المواد</h3>
+                <p>معادلة المواد التي درسها الطالب في جامعته السابقة مع مواد الجامعة</p>
+                <div style="margin-top: 1rem;">
+                    <div style="background: #f8f9fa; padding: 0.5rem; border-radius: 5px; margin-bottom: 0.5rem;">
+                        <span style="font-weight: 700;">جامعة القاهرة</span> ← <span>CS101 معادلة</span>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 0.5rem; border-radius: 5px;">
+                        <span style="font-weight: 700;">جامعة عين شمس</span> ← <span>MATH201 قيد المراجعة</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- منظومة التربية العسكرية -->
+        <section id="military" class="military-section" data-aos="fade-up">
+            <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem;"><i class="fas fa-shield-alt"></i> منظومة التربية العسكرية الإلكترونية</h2>
+            <p style="margin-bottom: 2rem; opacity: 0.9;">تسجيل إلكتروني مع كود دفع فوري وجدولة ذكية للمجموعات</p>
+
+            <div class="military-grid">
+                <div class="military-card">
+                    <h4><i class="fas fa-calendar-alt"></i> المجموعات المتاحة</h4>
+                    <div class="group-info">
+                        <span>المجموعة A (صباحية)</span>
+                        <span>أحد/ثلاثاء/خميس</span>
+                    </div>
+                    <div class="group-info">
+                        <span>المكان: ميدان التدريب الرئيسي</span>
+                        <span>8:00 - 10:00</span>
+                    </div>
+                    <div class="capacity-bar">
+                        <div class="capacity-fill" style="width: 75%;"></div>
+                    </div>
+                    <div class="group-info">
+                        <span>السعة: 150</span>
+                        <span>المتبقي: 38</span>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; background: white; color: #2c3e50;">تسجيل في المجموعة</button>
+                </div>
+
+                <div class="military-card">
+                    <h4><i class="fas fa-calendar-alt"></i> المجموعة B (مسائية)</h4>
+                    <div class="group-info">
+                        <span>المجموعة B (مسائية)</span>
+                        <span>سبت/اثنين/أربعاء</span>
+                    </div>
+                    <div class="group-info">
+                        <span>المكان: ميدان التدريب 2</span>
+                        <span>16:00 - 18:00</span>
+                    </div>
+                    <div class="capacity-bar">
+                        <div class="capacity-fill" style="width: 100%; background: #f56565;"></div>
+                    </div>
+                    <div class="group-info">
+                        <span>السعة: 150</span>
+                        <span style="color: #f56565;">ممتلئ</span>
+                    </div>
+                    <button class="btn btn-outline" style="width: 100%; background: transparent; border-color: white; color: white;" disabled>غير متاح</button>
+                </div>
+
+                <div class="military-card">
+                    <h4><i class="fas fa-credit-card"></i> الدفع الإلكتروني</h4>
+                    <p style="margin: 1rem 0;">كود الدفع الفوري للطالب: أحمد محمد</p>
+                    <div class="payment-code">
+                        <span>FF78-9G32-HH11-452K</span>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="https://via.placeholder.com/100x100/ffffff/000000?text=QR" alt="QR Code" style="width: 100px; height: 100px; margin: 0 auto;">
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; background: white; color: #2c3e50; margin-top: 1rem;">
+                        <i class="fas fa-print"></i> طباعة استمارة التسجيل
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- نظام الاستبيانات -->
+        <section id="surveys" class="survey-section" data-aos="fade-up">
+            <h2 class="section-title"><i class="fas fa-poll"></i> نظام الاستبيانات المتعددة</h2>
+
+            <div class="survey-types">
+                <span class="survey-type active">المقررات</span>
+                <span class="survey-type">الإرشاد الأكاديمي</span>
+                <span class="survey-type">الهيئة المعاونة</span>
+                <span class="survey-type">البرنامج</span>
+                <span class="survey-type">التدريب العملي</span>
+            </div>
+
+            <div class="survey-list">
+                <div class="survey-item">
+                    <div>
+                        <h4 style="margin-bottom: 0.3rem;">تقييم مقرر CS101 - د. أحمد علي</h4>
+                        <p style="color: #636e72;">الفصل الربيع 2026 | 15 سؤال</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 2rem;">
+                        <div style="text-align: center;">
+                            <span style="font-weight: 700;">78%</span>
+                            <span style="display: block; font-size: 0.85rem; color: #636e72;">نسبة الاستجابة</span>
+                        </div>
+                        <div class="survey-progress">
+                            <div class="progress-fill" style="width: 78%;"></div>
+                        </div>
+                        <button class="btn btn-primary">إجابة</button>
+                    </div>
+                </div>
+
+                <div class="survey-item">
+                    <div>
+                        <h4 style="margin-bottom: 0.3rem;">تقييم الإرشاد الأكاديمي - د. منى سامي</h4>
+                        <p style="color: #636e72;">المرشد الأكاديمي لكلية الحاسبات | 12 سؤال</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 2rem;">
+                        <div style="text-align: center;">
+                            <span style="font-weight: 700;">65%</span>
+                            <span style="display: block; font-size: 0.85rem; color: #636e72;">نسبة الاستجابة</span>
+                        </div>
+                        <div class="survey-progress">
+                            <div class="progress-fill" style="width: 65%;"></div>
+                        </div>
+                        <button class="btn btn-primary">إجابة</button>
+                    </div>
+                </div>
+
+                <div class="survey-item">
+                    <div>
+                        <h4 style="margin-bottom: 0.3rem;">تقييم الهيئة المعاونة - م. محمد كامل</h4>
+                        <p style="color: #636e72;">معيد بقسم علوم الحاسب | 10 أسئلة</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 2rem;">
+                        <div style="text-align: center;">
+                            <span style="font-weight: 700;">82%</span>
+                            <span style="display: block; font-size: 0.85rem; color: #636e72;">نسبة الاستجابة</span>
+                        </div>
+                        <div class="survey-progress">
+                            <div class="progress-fill" style="width: 82%;"></div>
+                        </div>
+                        <button class="btn btn-primary">إجابة</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 15px;">
+                <h4 style="margin-bottom: 1rem;">إضافة استبيان جديد</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <input type="text" placeholder="عنوان الاستبيان" style="padding: 0.75rem; border: 1px solid #e9ecef; border-radius: 8px;">
+                    <select style="padding: 0.75rem; border: 1px solid #e9ecef; border-radius: 8px;">
+                        <option>نوع الاستبيان</option>
+                        <option>مقرر</option>
+                        <option>إرشاد أكاديمي</option>
+                        <option>هيئة معاونة</option>
+                    </select>
+                    <input type="date" style="padding: 0.75rem; border: 1px solid #e9ecef; border-radius: 8px;">
+                    <button class="btn btn-primary">إنشاء استبيان</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- إدارة بيانات الطلاب الذاتية -->
+        <section class="cards-grid" data-aos="fade-up">
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-user-edit"></i>
+                </div>
+                <h3>تعديل البيانات الشخصية</h3>
+                <p>يمكن للطالب تعديل الصورة الشخصية، رقم الهاتف، البريد الإلكتروني، العنوان</p>
+                <div style="margin-top: 1rem;">
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <img src="https://via.placeholder.com/50x50/667eea/ffffff?text=User" style="border-radius: 50%;">
+                        <div>
+                            <span style="font-weight: 700;">أحمد محمد</span>
+                            <span style="display: block; color: #48bb78; font-size: 0.85rem;">آخر تحديث: اليوم</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-print"></i>
+                </div>
+                <h3>طباعة بيانات الحالة</h3>
+                <p>استخراج وثائق رسمية (بيانات أساسية، شهادة قيد، بيانات تفصيلية)</p>
+                <div style="margin-top: 1rem;">
+                    <button class="btn btn-outline" style="width: 100%; margin-bottom: 0.5rem;">بيانات الحالة الأساسية</button>
+                    <button class="btn btn-outline" style="width: 100%; margin-bottom: 0.5rem;">شهادة قيد</button>
+                    <button class="btn btn-primary" style="width: 100%;">بيانات الحالة التفصيلية</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <h3>توثيق الوثائق</h3>
+                <p>جميع الوثائق المطبوعة تحتوي على QR Code للتحقق الإلكتروني</p>
+                <div style="text-align: center; margin-top: 1rem;">
+                    <img src="https://via.placeholder.com/80x80/667eea/ffffff?text=QR" alt="QR Code Sample" style="width: 80px; height: 80px;">
+                </div>
+            </div>
+        </section>
+
+        <!-- نظام إدارة التعلم LMS -->
+        <section class="cards-grid" data-aos="fade-up">
+            <div class="card">
+                <span class="new-badge">جديد</span>
+                <div class="card-icon">
+                    <i class="fas fa-video"></i>
+                </div>
+                <h3>رفع المحاضرات</h3>
+                <p>رفع ملفات المحاضرات (PDF, PowerPoint, فيديو) وتنظيمها في وحدات</p>
+                <div class="card-stats">
+                    <span><i class="fas fa-file-video"></i> 1,234 محاضرة</span>
+                    <span><i class="fas fa-eye"></i> 45,678 مشاهدة</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="new-badge">جديد</span>
+                <div class="card-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <h3>بنك الأسئلة</h3>
+                <p>إضافة أسئلة يدوياً أو عبر رفع Excel (قالب جاهز) مع تصنيف حسب المادة والوحدة</p>
+                <div style="margin-top: 1rem;">
+                    <button class="btn btn-outline" style="width: 100%; margin-bottom: 0.5rem;"><i class="fas fa-download"></i> تحميل قالب Excel</button>
+                    <button class="btn btn-primary" style="width: 100%;"><i class="fas fa-upload"></i> رفع الأسئلة</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="new-badge">جديد</span>
+                <div class="card-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h3>الامتحانات الدورية</h3>
+                <p>إنشاء امتحانات باختيار الأسئلة يدوياً أو توليد عشوائي حسب المواصفات</p>
+                <div class="card-stats">
+                    <span><i class="fas fa-file-alt"></i> 234 امتحان</span>
+                    <span><i class="fas fa-users"></i> 12,345 طالب</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- الفوتر -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>المنظومة الأكاديمية</h3>
+                <p>نظام متكامل لإدارة الطلاب والتعلم الإلكتروني والكنترولات والخدمات الطلابية</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>روابط سريعة</h3>
+                <ul>
+                    <li><a href="#"><i class="fas fa-chevron-left"></i> القبول الإلكتروني</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-left"></i> تسجيل المواد</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-left"></i> النتائج</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-left"></i> الاستبيانات</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-left"></i> التربية العسكرية</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>الدعم الفني</h3>
+                <ul>
+                    <li><i class="fas fa-phone"></i> 19888</li>
+                    <li><i class="fas fa-envelope"></i> support@university.edu.eg</li>
+                    <li><i class="fas fa-map-marker-alt"></i> الجامعة الأكاديمية - القاهرة</li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>مواعيد العمل</h3>
+                <ul>
+                    <li>الأحد - الخميس: 9:00 - 15:00</li>
+                    <li>السبت: 10:00 - 13:00</li>
+                    <li>الجمعة: مغلق</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="copyright">
+            <p>جميع الحقوق محفوظة &copy; 2026 - المنظومة الأكاديمية المتكاملة SIS + LMS</p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem;">الإصدار 2.0 - آخر تحديث: 26 فبراير 2026</p>
+        </div>
+    </footer>
+
+    <!-- AOS Animation Library -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+    </script>
+</body>
+</html>
