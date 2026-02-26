@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الكتاب الإلكتروني | المنظومة الأكاديمية المتكاملة SIS+LMS</title>
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Google Fonts - Cairo + Amiri (للنصوص العربية) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* متغيرات الألوان */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --gold-color: #f1c40f;
+            --light-bg: #f8f9fa;
+            --dark-bg: #2d3748;
+            --text-dark: #2d3436;
+            --text-light: #7f8c8d;
+            --border-color: #e9ecef;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --gradient: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #ecf0f1;
+            color: var(--text-dark);
+            line-height: 1.8;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* تخصيص شريط التمرير */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #ecf0f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient);
+            border-radius: 6px;
+            border: 3px solid #ecf0f1;
+        }
+
+        /* غلاف الكتاب */
+        .book-cover {
+            background: var(--gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 10px solid var(--gold-color);
+        }
+
+        .book-cover::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .cover-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+            padding: 3rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cover-icon {
+            font-size: 6rem;
+            margin-bottom: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .cover-title {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .cover-subtitle {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cover-meta {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+            font-size: 1.2rem;
+        }
+
+        .cover-meta-item {
+            text-align: center;
+            padding: 1rem 2rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .cover-meta-item i {
+            margin-left: 0.5rem;
+            color: var(--gold-color);
+        }
+
+        .cover-badge {
+            position: absolute;
+            bottom: 2rem;
+            left: 2rem;
+            background: var(--gold-color);
+            color: var(--primary-color);
+            padding: 0.5rem 2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            transform: rotate(-5deg);
+            box-shadow: var(--shadow);
+        }
+
+        /* هيكل الكتاب الرئيسي */
+        .book-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: var(--shadow);
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* الشريط الجانبي (الفهرس) */
+        .book-sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s;
+            border-left: 1px solid var(--border-color);
+        }
+
+        .sidebar-header {
+            background: var(--gradient);
+            color: white;
+            padding: 2rem 1.5rem;
+        }
+
+        .sidebar-header h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-header p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .toc {
+            padding: 1.5rem;
+        }
+
+        .toc-item {
+            margin-bottom: 0.8rem;
+        }
+
+        .toc-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .toc-link:hover {
+            background: #f1f5f9;
+            color: var(--secondary-color);
+            transform: translateX(-5px);
+        }
+
+        .toc-link.active {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .toc-number {
+            width: 30px;
+            height: 30px;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 1rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .toc-link.active .toc-number {
+            background: white;
+            color: var(--secondary-color);
+        }
+
+        .toc-text {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+
+        /* المحتوى الرئيسي */
+        .book-content {
+            margin-right: 300px;
+            padding: 2rem 3rem;
+            background: white;
+        }
+
+        /* رأس الصفحة */
+        .content-header {
+            background: var(--light-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border-bottom: 5px solid var(--secondary-color);
+        }
+
+        .content-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .content-header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        /* أقسام الكتاب */
+        .book-section {
+            margin-bottom: 3rem;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .section-header {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-bottom: 3px solid var(--secondary-color);
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .section-header h2 i {
+            color: var(--secondary-color);
+            margin-left: 1rem;
+        }
+
+        .section-body {
+            padding: 2rem;
+        }
+
+        /* بطاقات المعلومات */
+        .info-card {
+            background: var(--light-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-right: 5px solid var(--secondary-color);
+        }
+
+        .info-card h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .info-card h3 i {
+            color: var(--secondary-color);
+            margin-left: 0.5rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .info-item strong {
+            color: var(--secondary-color);
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        /* قوائم النقاط */
+        .bullet-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bullet-list li {
+            padding: 0.5rem 0;
+            padding-right: 2rem;
+            position: relative;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .bullet-list li:last-child {
+            border-bottom: none;
+        }
+
+        .bullet-list li::before {
+            content: '•';
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            position: absolute;
+            right: 0;
+            top: 0.2rem;
+        }
+
+        .bullet-list li i {
+            color: var(--secondary-color);
+            margin-left: 0.5rem;
+        }
+
+        /* الجداول */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .data-table th {
+            background: var(--gradient);
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+        }
+
+        .data-table td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* مربعات الإحصائيات */
+        .stats-box {
+            background: var(--gradient);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 1rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* شريط التقدم */
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: var(--border-color);
+            border-radius: 5px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 5px;
+        }
+
+        /* أزرار التنقل بين الصفحات */
+        .page-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .nav-button {
+            padding: 1rem 2rem;
+            background: var(--light-bg);
+            border: none;
+            border-radius: 10px;
+            color: var(--text-dark);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .nav-button:hover {
+            background: var(--gradient);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-button i {
+            margin: 0 0.5rem;
+        }
+
+        /* تذييل الكتاب */
+        .book-footer {
+            background: var(--primary-color);
+            color: white;
+            padding: 3rem;
+            margin-top: 3rem;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .book-footer h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .signature-line {
+            width: 200px;
+            height: 3px;
+            background: var(--gold-color);
+            margin: 2rem auto;
+        }
+
+        /* استجابة للشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .book-sidebar {
+                transform: translateX(100%);
+            }
+
+            .book-sidebar.open {
+                transform: translateX(0);
+            }
+
+            .book-content {
+                margin-right: 0;
+                padding: 1rem;
+            }
+
+            .cover-title {
+                font-size: 2.5rem;
+            }
+
+            .cover-meta {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* تنسيقات النصوص العربية */
+        .arabic-text {
+            font-family: 'Amiri', serif;
+            font-size: 1.1rem;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #f6e58d 0%, #ffbe76 100%);
+            padding: 0.2rem 0.5rem;
+            border-radius: 5px;
+            font-weight: 700;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 0.2rem;
+        }
+
+        .badge-gold {
+            background: var(--gold-color);
+            color: var(--primary-color);
+        }
+
+        /* تأثيرات حركية */
+        @keyframes pageFlip {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(10deg); }
+            100% { transform: rotateY(0deg); }
+        }
+
+        .book-page {
+            animation: pageFlip 0.5s ease-out;
+        }
+
+        /* زر القائمة للجوال */
+        .menu-toggle {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            color: white;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow);
+            z-index: 1001;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: flex;
+            }
+        }
+
+        /* تنسيقات خاصة للفهرس */
+        .toc-section {
+            margin-top: 1.5rem;
+        }
+
+        .toc-section-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            padding-right: 1rem;
+        }
+
+        /* تنسيقات الصلاحيات */
+        .roles-table {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .role-row {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            background: var(--light-bg);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .role-name {
+            background: var(--gradient);
+            color: white;
+            padding: 1rem;
+            font-weight: 700;
+        }
+
+        .role-permissions {
+            padding: 1rem;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- زر القائمة للجوال -->
+    <div class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- غلاف الكتاب -->
+    <div class="book-cover">
+        <div class="cover-content">
+            <div class="cover-icon">
+                <i class="fas fa-university"></i>
+            </div>
+            <h1 class="cover-title">المنظومة الأكاديمية المتكاملة</h1>
+            <div class="cover-subtitle">لإدارة الجامعة</div>
+            <p style="font-size: 1.3rem; margin-bottom: 2rem;">نظام إدارة الطلاب SIS + نظام إدارة التعلم LMS + الكنترولات والخدمات الطلابية</p>
+            <div class="cover-meta">
+                <div class="cover-meta-item">
+                    <i class="fas fa-layer-group"></i>
+                    <span>14 فصلاً</span>
+                </div>
+                <div class="cover-meta-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>أكثر من 200 مكون</span>
+                </div>
+                <div class="cover-meta-item">
+                    <i class="fas fa-users"></i>
+                    <span>7 أدوار رئيسية</span>
+                </div>
+            </div>
+            <div style="margin-top: 3rem;">
+                <i class="fas fa-arrow-down fa-2x" style="animation: bounce 2s infinite;"></i>
+            </div>
+        </div>
+        <div class="cover-badge">
+            <i class="fas fa-star"></i> الإصدار 2.0
+        </div>
+    </div>
+
+    <!-- الشريط الجانبي (الفهرس) -->
+    <div class="book-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-list"></i> فهرس المحتويات</h3>
+            <p>المنظومة الأكاديمية المتكاملة</p>
+        </div>
+        <div class="toc">
+            <div class="toc-item">
+                <a href="#executive-summary" class="toc-link" onclick="closeSidebar()">
+                    <span class="toc-number">1</span>
+                    <span class="toc-text">ملخص تنفيذي</span>
+                </a>
+            </div>
+            <div class="toc-item">
+                <a href="#admission" class="toc-link" onclick="closeSidebar()">
+                    <span class="toc-number">2</span>
+                    <span class="toc-text">نظام القبول الإلكتروني</span>
+                </a>
+            </div>
+            <div class="toc-item">
+                <a href="#courses" class="toc-link" onclick="closeSidebar()">
+                    <span class="toc-number">3</span>
+                    <span class="toc-text">إدارة المواد الدراسية</span>
+                </a>
+            </div>
+            <div class="toc-item">
+                <a href="#registration" class="toc-link" onclick="closeSidebar()">
+                    <span class="toc-number">4</span>
+                    <span class="toc-text">تسجيل المواد والإرشاد</span>
+                </a>
+            </div>
+            <div class="toc-item">
+                <a href="#control" class="toc-link" onclick="closeSidebar()">
+                    <span class="toc-number">5</span>
+                    <span class="toc-text">الكنترولات ورصد الدرجات</span>
+                </a>
+            </div>
+            <div class="toc-item">
+                <a href="#gpa" class="toc-link" onclick="closeSidebar()">
+                    <span class="toc-number">6</span>
+                    <span class="toc-text">حساب المعدلات والترتيب</span>
+                </a>
+            </div>
+            <div class="toc-item">
+                <a href="#rahma" class="toc-link" onclick="closeSidebar()">
+                    <span class="toc-number">7</span>
+                    <span class="toc-text">نظام الرأفة</span>
+                </a>
+            </div>
+            <div class="toc-item">
+                <a href="#transfer" class="toc-link" onclick="closeSidebar()">
+                    <span class="toc-number">8</span>
+                    <span class="toc-text">الطلاب المحولين</span>
+                </a>
+            </div>
+            <div class="toc-item">
+                <a href="#military" class="toc-link" onclick="closeSidebar()">
+                    <span class="toc-number">9</span>
+                    <span class="toc-text">التربية العسكرية</span>
+                </a>
+            </div>
+            <div class="toc-item">
+                <a href="#surveys" class="toc-link" onclick="closeSidebar()">
+                    <span class="toc-number">10</span>
+                    <span class="toc-text">الاستبيانات المتعددة</span>
+                </a>
+            </div>
+            <div class="toc-item">
+                <a href="#self-service" class="toc-link" onclick="closeSidebar()">
+                    <span class="toc-number">11</span>
+                    <span class="toc-text">إدارة البيانات الذاتية</span>
+                </a>
+            </div>
+            <div class="toc-item">
+                <a href="#lms" class="toc-link" onclick="closeSidebar()">
+                    <span class="toc-number">12</span>
+                    <span class="toc-text">نظام إدارة التعلم LMS</span>
+                </a>
+            </div>
+            <div class="toc-item">
+                <a href="#appeals" class="toc-link" onclick="closeSidebar()">
+                    <span class="toc-number">13</span>
+                    <span class="toc-text">تقديم التظلمات الإلكتروني</span>
+                </a>
+            </div>
+            <div class="toc-item">
+                <a href="#reports" class="toc-link" onclick="closeSidebar()">
+                    <span class="toc-number">14</span>
+                    <span class="toc-text">التقارير والصلاحيات</span>
+                </a>
+            </div>
+            <div class="toc-item">
+                <a href="#conclusion" class="toc-link" onclick="closeSidebar()">
+                    <span class="toc-number">15</span>
+                    <span class="toc-text">الخاتمة والتوصيات</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <div class="book-content" id="bookContent">
+        <!-- رأس الصفحة -->
+        <div class="content-header">
+            <h1>المنظومة الأكاديمية المتكاملة لإدارة الجامعة</h1>
+            <p>نظام موحد يجمع بين SIS و LMS والكنترولات والخدمات الطلابية</p>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <span class="badge"><i class="fas fa-check"></i> متكامل</span>
+                <span class="badge badge-gold"><i class="fas fa-star"></i> متعدد المراحل</span>
+                <span class="badge"><i class="fas fa-shield-alt"></i> آمن</span>
+            </div>
+        </div>
+
+        <!-- ملخص تنفيذي -->
+        <section id="executive-summary" class="book-section">
+            <div class="section-header">
+                <h2><i class="fas fa-file-alt"></i> ملخص تنفيذي</h2>
+            </div>
+            <div class="section-body">
+                <div class="info-card">
+                    <p class="arabic-text" style="font-size: 1.1rem; line-height: 2;">
+                        تمثل هذه المنظومة الأكاديمية المتكاملة نقلة نوعية في إدارة العملية التعليمية بالجامعة، حيث تجمع بين نظام إدارة الطلاب (SIS) ونظام إدارة التعلم (LMS) في منصة واحدة موحدة. تغطي المنظومة كامل رحلة الطالب الأكاديمية بدءاً من <span class="highlight">القبول الإلكتروني متعدد المراحل</span>، مروراً بـ <span class="highlight">تسجيل المواد والإرشاد الأكاديمي</span>، ووصولاً إلى <span class="highlight">الكنترولات ورصد الدرجات</span> وحساب المعدلات وتطبيق قواعد الرأفة. كما تمتد لتشمل خدمات حيوية مثل التربية العسكرية الإلكترونية، والاستبيانات المتعددة، وإدارة البيانات الذاتية للطلاب.
+                    </p>
+                    <div style="background: #e8f4fd; padding: 1.5rem; border-radius: 10px; margin-top: 1rem;">
+                        <h3 style="color: var(--primary-color); margin-bottom: 1rem;"><i class="fas fa-gem"></i> مميزات المنظومة</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <strong>التكامل الكامل</strong>
+                                <span>تبادل بيانات آني بين الأنظمة</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>تجربة سلسة</strong>
+                                <span>للطلاب وأعضاء هيئة التدريس</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>كفاءة عالية</strong>
+                                <span>أتمتة المهام الروتينية</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>شفافية وعدالة</strong>
+                                <span>آليات واضحة للتقييم</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- نظام القبول الإلكتروني -->
+        <section id="admission" class="book-section">
+            <div class="section-header">
+                <h2><i class="fas fa-user-graduate"></i> أولاً: نظام القبول الإلكتروني متعدد المراحل</h2>
+            </div>
+            <div class="section-body">
+                <!-- بوابة التقديم -->
+                <div class="info-card">
+                    <h3><i class="fas fa-door-open"></i> 1.1 بوابة التقديم الإلكتروني</h3>
+                    <h4 style="margin: 1rem 0 0.5rem;">أ. واجهة الطالب المتقدم</h4>
+                    <ul class="bullet-list">
+                        <li><i class="fas fa-user-plus"></i> <strong>إنشاء حساب:</strong> تسجيل جديد باستخدام البريد الإلكتروني ورقم الهاتف مع توثيق الحساب عبر رسالة تأكيد.</li>
+                        <li><i class="fas fa-address-card"></i> <strong>تعبئة البيانات الشخصية:</strong> نموذج إلكتروني لجمع جميع البيانات الأساسية (الاسم، الرقم القومي، تاريخ الميلاد، الجنس، الجنسية، العنوان، بيانات ولي الأمر).</li>
+                        <li><i class="fas fa-upload"></i> <strong>رفع المستندات:</strong> رفع الملفات المطلوبة (شهادة الميلاد، بطاقة الرقم القومي، شهادة الثانوية العامة، الصورة الشخصية) بصيغ متعددة (PDF, JPG, PNG).</li>
+                        <li><i class="fas fa-credit-card"></i> <strong>سداد الرسوم المبدئية:</strong> تحويل إلى بوابة الدفع الإلكتروني.</li>
+                        <li><i class="fas fa-list-ol"></i> <strong>اختيار الرغبات:</strong> اختيار عدد من الرغبات (كليات، برامج) مرتبة حسب الأولوية، مع إمكانية إعادة الترتيب قبل انتهاء فترة التقديم.</li>
+                    </ul>
+                </div>
+
+                <!-- آلية الترشيح -->
+                <div class="info-card">
+                    <h3><i class="fas fa-filter"></i> 1.2 آلية الترشيح متعددة المراحل</h3>
+                    
+                    <div style="margin: 1.5rem 0;">
+                        <h4>المرحلة الأولى: الفلترة المبدئية</h4>
+                        <ul class="bullet-list">
+                            <li>استبعاد الطلاب غير المستوفين للشروط الأساسية:
+                                <ul style="margin-right: 2rem; list-style-type: circle;">
+                                    <li>الحد الأدنى للمجموع الكلي.</li>
+                                    <li>اجتياز اختبارات القدرات (إن وجدت).</li>
+                                    <li>اجتياز المقابلة الشخصية (إن وجدت).</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>المرحلة الثانية: التوزيع حسب الرغبات والمجموع</h4>
+                        <ul class="bullet-list">
+                            <li><strong>خوارزمية التوزيع الذكي:</strong> ترتيب الطلاب تنازلياً حسب مجموع الدرجات.</li>
+                            <li><strong>تطبيق قاعدة "أعلى مجموع يحصل على رغبته الأولى":</strong> توزيع الطلاب على الرغبات مع مراعاة الأولويات.</li>
+                            <li><strong>التحقق من الطاقة الاستيعابية:</strong> التأكد من أن العدد المتبقي في كل كلية يسمح بترشيح الطالب.</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>المرحلة الثالثة: التوزيع على المراحل الزمنية</h4>
+                        <div class="stats-box" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <span class="stat-number">المرحلة 1</span>
+                                    <span class="stat-label">الطلاب المتفوقون</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">المرحلة 2</span>
+                                    <span class="stat-label">الطلاب المتوسطون</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">المرحلة 3</span>
+                                    <span class="stat-label">الطلاب المؤهلون</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">Rerun</span>
+                                    <span class="stat-label">إعادة التوزيع</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin: 1.5rem 0;">
+                        <h4>المرحلة الرابعة: تأكيد الترشيح والموافقة</h4>
+                        <ul class="bullet-list">
+                            <li><i class="fas fa-bell"></i> <strong>إشعار الترشيح:</strong> عبر الصفحة الخاصة بكل طالب.</li>
+                            <li><i class="fas fa-clock"></i> <strong>فترة الموافقة:</strong> مهلة زمنية لحين انتهاء التقديم بالكامل مع إتاحة تغيير الرغبات أثناء ذلك الوقت.</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>تأكيد القيد النهائي:</strong> إنشاء رقم جامعي تلقائي وتحويل الحالة إلى "مقبول نهائياً".</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- تقارير القبول -->
+                <div class="info-card">
+                    <h3><i class="fas fa-chart-pie"></i> 1.3 تقارير القبول</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>إحصائيات التقديم</strong>
+                            <span>عدد المتقدمين، المقبولين، التوزيع</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>الطاقة الاستيعابية</strong>
+                            <span>الأماكن المتاحة والمشغولة لكل كلية</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>مراحل القبول</strong>
+                            <span>متابعة تقدم الطلاب</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>الطلاب المنتظرين</strong>
+                            <span>قائمة الانتظار (Waiting List)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- إدارة المواد الدراسية -->
+        <section id="courses" class="book-section">
+            <div class="section-header">
+                <h2><i class="fas fa-book"></i> ثانياً: إدارة المواد الدراسية والخطط الأكاديمية</h2>
+            </div>
+            <div class="section-body">
+                <div class="info-card">
+                    <h3><i class="fas fa-database"></i> 2.1 بنك المواد المركزي</h3>
+                    
+                    <h4 style="margin: 1rem 0;">أ. إضافة مادة جديدة</h4>
+                    <ul class="bullet-list">
+                        <li><strong>الصلاحية:</strong> الإدارة العليا، رؤساء الأقسام.</li>
+                        <li><strong>البيانات الأساسية:</strong>
+                            <ul style="margin-right: 2rem; list-style-type: circle; margin-top: 0.5rem;">
+                                <li>رمز المادة (فريد)</li>
+                                <li>اسم المادة (عربي/إنجليزي)</li>
+                                <li>عدد الساعات المعتمدة</li>
+                                <li>المستوى الدراسي</li>
+                                <li>القسم المقدم</li>
+                                <li>الكلية</li>
+                                <li>البرنامج الأكاديمي</li>
+                                <li>نوع المادة (إجباري، اختياري، متطلبات جامعة)</li>
+                                <li>طريقة التقييم</li>
+                                <li>وصف المادة</li>
+                                <li>مخرجات التعلم</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4 style="margin: 1.5rem 0 0.5rem;">ب. تعديل بيانات المادة</h4>
+                    <ul class="bullet-list">
+                        <li>تعديل البيانات مع الاحتفاظ بسجل التعديلات (Audit Log).</li>
+                        <li>إمكانية إضافة ملاحظات عن سبب التعديل.</li>
+                    </ul>
+
+                    <h4 style="margin: 1.5rem 0 0.5rem;">ج. إضافة المتطلبات السابقة</h4>
+                    <ul class="bullet-list">
+                        <li><strong>أنواع المتطلبات:</strong>
+                            <ul style="margin-right: 2rem; list-style-type: circle;">
+                                <li><span class="badge" style="background: #e74c3c;">إجباري</span> لا يمكن تسجيل المادة إلا بعد اجتياز هذه المادة.</li>
+                                <li><span class="badge badge-gold" style="background: #f39c12;">شرط مجموعة</span> اجتياز مجموعة من المواد (مثلاً: مادتين من ثلاث).</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4 style="margin: 1.5rem 0 0.5rem;">د. ربط المواد بالخطط الدراسية</h4>
+                    <ul class="bullet-list">
+                        <li>تحديد المواد المطلوبة لكل مستوى وفصل دراسي.</li>
+                        <li>تحديد ما إذا كانت المادة إجبارية أم اختيارية.</li>
+                        <li>تحديد المجموعات الاختيارية.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- تسجيل المواد والإرشاد الأكاديمي -->
+        <section id="registration" class="book-section">
+            <div class="section-header">
+                <h2><i class="fas fa-pen"></i> ثالثاً: منظومة تسجيل المواد والإرشاد الأكاديمي</h2>
+            </div>
+            <div class="section-body">
+                <div class="info-card">
+                    <h3>3.1 إعدادات التسجيل</h3>
+                    <ul class="bullet-list">
+                        <li><strong>فتح/قفل التسجيل للفصل الدراسي:</strong> تحديد تواريخ التسجيل (مبكر، عادي، إضافة وحذف) وتحديد الفئات المسموح لها بالتسجيل.</li>
+                        <li><strong>فتح/قفل التسجيل لكل كلية على حدة:</strong> مرونة في التحكم لكل كلية بشكل منفصل مع إمكانية إضافة ملاحظات.</li>
+                        <li><strong>تحديد عدد الساعات المسموح بها لكل طالب:</strong> حسب الفرقة الدراسية، التقدير التراكمي، واللائحة الداخلية للكلية مع آلية المنع الذكي.</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>3.2 عملية تسجيل المواد</h3>
+                    <ul class="bullet-list">
+                        <li><strong>واجهة تسجيل الطالب:</strong> المواد المتاحة، سلة التسجيل، الجدول المقترح، عرض الجدول الزمني، مؤشر الساعات، حالة المواد.</li>
+                        <li><strong>آليات التحقق الذكي:</strong> التحقق من المتطلبات السابقة، التعارض الزمني، السعة الاستيعابية، الحد الأقصى للساعات، المستوى الدراسي.</li>
+                        <li><strong>استمارة تسجيل المواد:</strong> وثيقة رسمية إلكترونية قابلة للطباعة بصيغة PDF.</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>3.4 نظام الإرشاد الأكاديمي</h3>
+                    <ul class="bullet-list">
+                        <li><strong>تعيين المرشدين الأكاديميين:</strong> تعيين مرشد لكل طالب مع تحديد الحد الأقصى لعدد الطلاب تحت إشراف كل مرشد.</li>
+                        <li><strong>لوحة تحكم المرشد:</strong> إحصائيات سريعة، قائمة الطلاب تحت الإشراف، إشعارات بالمتابعة.</li>
+                        <li><strong>متابعة حالة تسجيل الطالب:</strong> الاطلاع على المواد المسجلة، المواد المتبقية، سجل المواد السابقة، المعدل التراكمي.</li>
+                        <li><strong>الإنذارات الأكاديمية:</strong> توليد تلقائي للإنذارات (انخفاض المعدل، تجاوز نسبة الرسوب، الغياب) مع إشعار فوري للمرشد.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- منظومة الكنترولات -->
+        <section id="control" class="book-section">
+            <div class="section-header">
+                <h2><i class="fas fa-chart-line"></i> رابعاً: منظومة الكنترولات ورصد الدرجات</h2>
+            </div>
+            <div class="section-body">
+                <div class="info-card">
+                    <h3>4.1 واجهة الرصد الرئيسية</h3>
+                    <ul class="bullet-list">
+                        <li><strong>شاشة رصد المواد:</strong> اختيار المادة، جدول الطلاب، حقول إدخال الدرجات، شريط تقدم، أزرار تحكم.</li>
+                        <li><strong>مراجعة دقيقة لحالة كل طالب:</strong> نافذة جانبية تعرض السجل السابق للمادة (عدد المحاولات، النتائج السابقة) وبيانات إضافية (المعدل، الحالة).</li>
+                        <li><strong>إحصائيات الرسوب في المادة:</strong> عرض لحظي لعدد الطلاب، الناجحين، الراسبين، نسبة النجاح، توزيع الدرجات.</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>4.2 إدارة لجان الامتحان</h3>
+                    <ul class="bullet-list">
+                        <li><strong>تعريف اللجان لكل مادة:</strong> رمز اللجنة، الفرقة، الشعبة، الطلاب، المراقبون، المكان، الموعد مع طباعة كشوف اللجان.</li>
+                        <li><strong>شروط توزيع الطلاب:</strong> التوزيع الأبجدي، العددي، المتوازن، حسب الشعبة، حسب الحالة.</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>4.4 إعادة الرصد والتعديلات</h3>
+                    <ul class="bullet-list">
+                        <li><strong>حالات التعديل المسموح بها:</strong> التماسات الطلاب، أخطاء في الرصد، إعادة تصحيح.</li>
+                        <li><strong>آلية إعادة الرصد الآمنة:</strong> فتح المادة للتعديل، عرض قائمة الطلاب فقط، تعديل الدرجة مع ملاحظة، تسجيل في Audit Log، إعادة اعتماد.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- نظام حساب المعدلات -->
+        <section id="gpa" class="book-section">
+            <div class="section-header">
+                <h2><i class="fas fa-calculator"></i> خامساً: نظام حساب المعدلات والترتيب</h2>
+            </div>
+            <div class="section-body">
+                <div class="info-card">
+                    <h3>5.1 حساب المعدل الفصلي والتراكمي</h3>
+                    <ul class="bullet-list">
+                        <li><strong>آلية الحساب:</strong> طبقاً لكل لائحة، تحديث تلقائي بعد اعتماد النتائج.</li>
+                        <li><strong>عرض المعدلات:</strong> للطالب مع رسم بياني، للمرشد الأكاديمي، للكنترول.</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>5.2 نظام الترتيب</h3>
+                    <ul class="bullet-list">
+                        <li><strong>الترتيب على مستوى الفصل:</strong> تحديد أوائل الفصل.</li>
+                        <li><strong>الترتيب الأكاديمي العام:</strong> تحديد أوائل الخريجين، المفاضلة للدراسات العليا.</li>
+                        <li><strong>الترتيب بناءً على العام الدراسي:</strong> متابعة أداء الدفعات.</li>
+                        <li><strong>المفاضلة بين الطلاب:</strong> معايير قابلة للتخصيص (المعدل، مجموع الدرجات، ساعات التفوق، الأنشطة، الأقدمية).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- نظام الرأفة -->
+        <section id="rahma" class="book-section">
+            <div class="section-header">
+                <h2><i class="fas fa-heart"></i> سادساً: نظام الرأفة للطلاب</h2>
+            </div>
+            <div class="section-body">
+                <div class="info-card">
+                    <h3>6.1 تعريف قواعد الرأفة</h3>
+                    <p>نظام الرأفة هو مجموعة من القواعد الاستثنائية التي تطبق على بعض الطلاب الراسبين، بهدف منحهم فرصة للنجاح أو تحسين تقديرهم، خاصة في الأنظمة غير القائمة على الساعات المعتمدة (النظام السنوي).</p>
+                    <p><strong>أنواع قواعد الرأفة:</strong> قاعدة تحسين التقدير (تحسين تقدير مقبول إلى جيد إذا استوفى شروطاً).</p>
+                </div>
+
+                <div class="info-card">
+                    <h3>6.2 تطبيق الرأفة</h3>
+                    <ul class="bullet-list">
+                        <li><strong>آلية شبه تلقائية:</strong> فحص الطلاب المستوفين للشروط، إنشاء تقرير أولي، عرض على لجنة الرأفة، تطبيق التغييرات وتسجيلها.</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>6.3 تقارير الرأفة</h3>
+                    <ul class="bullet-list">
+                        <li><strong>تقرير الطلاب المستوفين لشروط الرأفة:</strong> قائمة بالطلاب مع حالتهم قبل وبعد التطبيق.</li>
+                        <li><strong>تقرير الراسبين:</strong> اسم الطالب، الرقم، المواد الراسب فيها، عدد نقاط الرسوب، الدرجات، الحد الأدنى، حالة الطالب بعد الرأفة (تصدير Excel, PDF).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- نظام الطلاب المحولين -->
+        <section id="transfer" class="book-section">
+            <div class="section-header">
+                <h2><i class="fas fa-exchange-alt"></i> سابعاً: نظام الطلاب المحولين</h2>
+            </div>
+            <div class="section-body">
+                <div class="info-card">
+                    <h3>7.1 إضافة طالب محول</h3>
+                    <ul class="bullet-list">
+                        <li><strong>بيانات الطالب الأساسية:</strong> نوع القيد "محول من جامعة أخرى"، البيانات الأساسية، ربط الطالب بالكلية والقسم والفرقة.</li>
+                        <li><strong>تسجيل المواد السابق دراستها:</strong> إضافة المواد مع بياناتها (اسم المادة، الرمز، الساعات، الدرجة، التقدير) واختيار المعادلة في جامعتنا.</li>
+                        <li><strong>معاملة الطالب المحول:</strong> حساب المعدل التراكمي، تسجيل مواد جديدة، عرض الخطة المتبقية، طباعة كشف الدرجات.</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3>7.2 تقارير الطلاب المحولين</h3>
+                    <ul class="bullet-list">
+                        <li>تقرير إحصائي (عدد الطلاب المحولين، توزيعهم).</li>
+                        <li>تقرير المعادلات (المواد المعادلة والمرفوضة).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- التربية العسكرية -->
+        <section id="military" class="book-section">
+            <div class="section-header">
+                <h2><i class="fas fa-shield-alt"></i> ثامناً: منظومة التربية العسكرية الإلكترونية</h2>
+            </div>
+            <div class="section-body">
+                <div class="info-card">
+                    <h3>8.1 تسجيل الطالب</h3>
+                    <ul class="bullet-list">
+                        <li><strong>بوابة التربية العسكرية:</strong> بوابة إلكترونية مخصصة للطلاب المستوفين للشروط.</li>
+                        <li><strong>عملية التسجيل:</strong> الدخول، عرض الشروط، اختيار المجموعة (مع عرض السعة والأماكن الشاغرة)، الإغلاق التلقائي عند اكتمال العدد.</li>
+                        <li><strong>توليد كود الدفع الفوري:</strong> كود مرتبط بالطالب والمجموعة (باركود أو رقم مرجعي).</li>
+                        <li><strong>الدفع الإلكتروني:</strong> تحويل لبوابة الدفع، تحديث الحالة إلى "مسدد".</li>
+                        <li><strong>استمارة التسجيل النهائية:</strong> طباعة الاستمارة (بيانات الطالب، المجموعة، كود الدفع، باركود) وإرسال نسخة للبريد.</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>8.2 إدارة التربية العسكرية</h3>
+                    <ul class="bullet-list">
+                        <li><strong>إعدادات الجدولة:</strong> فترة التقديم، فترة الدفع، فترة التدريب.</li>
+                        <li><strong>إدارة المجموعات:</strong> إضافة مجموعة جديدة (نوع، أيام، مكان، سعة، مدرب)، عرض المجموعات، تعديل مع إشعار الطلاب.</li>
+                        <li><strong>تقارير التربية العسكرية:</strong> الطلاب المسجلين، الحضور، المدفوعات، إتمام التدريب.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- الاستبيانات -->
+        <section id="surveys" class="book-section">
+            <div class="section-header">
+                <h2><i class="fas fa-poll"></i> تاسعاً: نظام الاستبيانات المتعددة</h2>
+            </div>
+            <div class="section-body">
+                <div class="info-card">
+                    <h3>9.1 أنواع الاستبيانات</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><strong>المقرر</strong> تقييم المادة الدراسية</div>
+                        <div class="info-item"><strong>الإرشاد الأكاديمي</strong> تقييم جودة الإرشاد</div>
+                        <div class="info-item"><strong>الهيئة المعاونة</strong> تقييم المعيدين</div>
+                        <div class="info-item"><strong>البرنامج الأكاديمي</strong> تقييم البرنامج ككل</div>
+                        <div class="info-item"><strong>التدريب العملي</strong> تقييم تجربة التدريب</div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>9.2 إنشاء وإدارة الاستبيانات</h3>
+                    <ul class="bullet-list">
+                        <li><strong>إضافة استبيان جديد:</strong> تحديد النوع، العنوان، الوصف، الفئة المستهدفة، فترة الإتاحة.</li>
+                        <li><strong>إضافة أسئلة:</strong> أنواع متعددة (اختيار من متعدد، مقياس ليكرت، تقييم عددي، نص مفتوح، نعم/لا) مع إمكانية تنظيمها في أقسام وتحديد الإجبارية.</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>9.4 تقارير وتحليلات الاستبيانات</h3>
+                    <ul class="bullet-list">
+                        <li>نسبة الاستجابة، توزيع الإجابات، متوسط التقييمات، تحليل النصوص المفتوحة.</li>
+                        <li>مقارنة نتائج المادة عبر فصول، مقارنة أداء أعضاء التدريس.</li>
+                        <li>تصدير Excel, PDF.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- إدارة البيانات الذاتية -->
+        <section id="self-service" class="book-section">
+            <div class="section-header">
+                <h2><i class="fas fa-user-edit"></i> عاشراً: إدارة بيانات الطلاب الذاتية</h2>
+            </div>
+            <div class="section-body">
+                <div class="info-card">
+                    <h3>10.1 تعديل البيانات الشخصية</h3>
+                    <ul class="bullet-list">
+                        <li><strong>البيانات المسموح بتعديلها:</strong> الصورة الشخصية، رقم الهاتف، البريد الإلكتروني، العنوان، حالة الطوارئ.</li>
+                        <li><strong>آلية التعديل:</strong> تعديل، حفظ، تأكيد (لبعض التغييرات)، دخول حيز التنفيذ.</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>10.2 طباعة بيانات الحالة</h3>
+                    <ul class="bullet-list">
+                        <li><strong>الصلاحية:</strong> شؤون الطلاب لأي طالب.</li>
+                        <li><strong>النماذج:</strong> بيانات الحالة الأساسية، شهادة قيد، بيانات الحالة التفصيلية.</li>
+                        <li><strong>الأمان والتوثيق:</strong> QR Code، رقم مرجعي، تسجيل عمليات الطباعة.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- نظام إدارة التعلم LMS -->
+        <section id="lms" class="book-section">
+            <div class="section-header">
+                <h2><i class="fas fa-laptop"></i> حادي عشر: نظام إدارة التعلم LMS المتكامل</h2>
+            </div>
+            <div class="section-body">
+                <div class="info-card">
+                    <h3>11.1 التكامل مع SIS</h3>
+                    <ul class="bullet-list">
+                        <li>مزامنة تلقائية للمواد وقوائم الطلاب.</li>
+                        <li>تحديث آني لأي تغيير في قيد الطالب.</li>
+                        <li>دخول موحد (SSO) لنفس بيانات الدخول.</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>11.2 إدارة المحتوى التعليمي</h3>
+                    <ul class="bullet-list">
+                        <li>رفع المحاضرات (PDF, PowerPoint, فيديو, صوت).</li>
+                        <li>تنظيم المحتوى في وحدات أو أسابيع.</li>
+                        <li>محرر محتوى متقدم ومكتبة وسائط متكاملة.</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>11.3 بنك الأسئلة وإنشاء الامتحانات</h3>
+                    <ul class="bullet-list">
+                        <li><strong>إضافة الأسئلة يدوياً:</strong> أنواع متعددة، مستوى صعوبة، موضوع، كلمات مفتاحية.</li>
+                        <li><strong>إضافة الأسئلة عبر رفع Excel:</strong> تحميل قالب جاهز، تعبئة، رفع، فحص، استيراد.</li>
+                        <li><strong>مكونات القالب:</strong> question_text, question_type, difficulty, topic, option_a, option_b, option_c, option_d, correct_answer, marks.</li>
+                        <li><strong>إنشاء الامتحانات:</strong> اختيار يدوي أو توليد عشوائي (مواصفات)، إعدادات (الوقت، المحاولات، عرض النتائج، كلمة المرور).</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>11.4 سجل التقديرات</h3>
+                    <ul class="bullet-list">
+                        <li>مزامنة أوتوماتيكية لأعمال التقييم.</li>
+                        <li>إعداد معادلات حساب الدرجات.</li>
+                        <li>عرض تقدير الطالب أولاً بأول.</li>
+                        <li>تصدير التقدير النهائي إلى SIS.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- تقديم التظلمات الإلكتروني -->
+        <section id="appeals" class="book-section">
+            <div class="section-header">
+                <h2><i class="fas fa-gavel"></i> ثاني عشر: تقديم التظلمات الإلكتروني</h2>
+            </div>
+            <div class="section-body">
+                <div class="info-card">
+                    <p>يقوم الطالب باختيار المواد المراد تقديم تظلم فيها ومتابعة النتيجة (قبول أو رفض).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- التقارير والصلاحيات -->
+        <section id="reports" class="book-section">
+            <div class="section-header">
+                <h2><i class="fas fa-chart-bar"></i> ثالث عشر: التقارير الشاملة والصلاحيات</h2>
+            </div>
+            <div class="section-body">
+                <div class="info-card">
+                    <h3>12.1 التقارير الرئيسية</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><strong>الطلاب والمواد</strong> المسجلين، المتطلبات، حالة التسجيل</div>
+                        <div class="info-item"><strong>الكنترولات</strong> توزيع التقديرات، إحصائيات المستويات، الراسبين، سجل التعديلات</div>
+                        <div class="info-item"><strong>الإرشاد الأكاديمي</strong> الطلاب مع المرشدين، متابعة التسجيل، الإنذارات</div>
+                        <div class="info-item"><strong>التربية العسكرية</strong> المسجلين، المدفوعات، الحضور، إتمام التدريب</div>
+                        <div class="info-item"><strong>الاستبيانات</strong> نسبة الاستجابة، تحليل الإجابات، مقارنات، تقييم كل مادة</div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>12.2 نظام الصلاحيات</h3>
+                    <div class="roles-table">
+                        <div class="role-row">
+                            <div class="role-name">الطالب</div>
+                            <div class="role-permissions">تسجيل المواد، عرض الجدول، عرض النتائج، إجابة الاستبيانات، تعديل بياناته</div>
+                        </div>
+                        <div class="role-row">
+                            <div class="role-name">المرشد الأكاديمي</div>
+                            <div class="role-permissions">عرض الطلاب تحت الإشراف، متابعة تسجيلهم، الموافقة على الخطط، عرض الإنذارات</div>
+                        </div>
+                        <div class="role-row">
+                            <div class="role-name">أستاذ المادة</div>
+                            <div class="role-permissions">عرض قوائم الطلاب، إدارة بنك الأسئلة، إنشاء الامتحانات، رصد الدرجات الأولية</div>
+                        </div>
+                        <div class="role-row">
+                            <div class="role-name">رئيس القسم</div>
+                            <div class="role-permissions">إدارة المواد، تعيين المرشدين، اعتماد الخطط، عرض تقارير القسم</div>
+                        </div>
+                        <div class="role-row">
+                            <div class="role-name">الكنترول</div>
+                            <div class="role-permissions">رصد الدرجات النهائية، مراجعة النتائج، إدارة لجان الامتحان، طباعة كشوف المناقشة</div>
+                        </div>
+                        <div class="role-row">
+                            <div class="role-name">مدير الكنترول</div>
+                            <div class="role-permissions">اعتماد النتائج، إعادة فتح المواد للتعديل، الاطلاع على سجل التدقيق</div>
+                        </div>
+                        <div class="role-row">
+                            <div class="role-name">شؤون الطلاب</div>
+                            <div class="role-permissions">إدارة القبول، فترات التسجيل، بيانات الطلاب، إصدار التقارير</div>
+                        </div>
+                        <div class="role-row">
+                            <div class="role-name">التربية العسكرية</div>
+                            <div class="role-permissions">إعداد فترات التسجيل، إدارة المجموعات، متابعة المدفوعات</div>
+                        </div>
+                        <div class="role-row">
+                            <div class="role-name">الجودة</div>
+                            <div class="role-permissions">إنشاء وإدارة الاستبيانات، الاطلاع على النتائج، تصدير التقارير</div>
+                        </div>
+                        <div class="role-row">
+                            <div class="role-name">مدير النظام</div>
+                            <div class="role-permissions">صلاحيات كاملة، إدارة المستخدمين، إعدادات النظام العامة</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>12.3 تصدير التقارير</h3>
+                    <ul class="bullet-list">
+                        <li>Excel: لتحليل البيانات.</li>
+                        <li>PDF: للطباعة والحفظ الرسمي.</li>
+                        <li>طباعة مباشرة: مع تنسيق جاهز به التوقيعات المهمة للجامعة.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- الخاتمة والتوصيات -->
+        <section id="conclusion" class="book-section">
+            <div class="section-header">
+                <h2><i class="fas fa-flag-checkered"></i> الخاتمة والتوصيات</h2>
+            </div>
+            <div class="section-body">
+                <div class="info-card">
+                    <h3>خلاصة عامة</h3>
+                    <p>تمثل هذه المنظومة الأكاديمية المتكاملة نقلة نوعية في إدارة العملية التعليمية بالجامعة، حيث توفر حلولاً رقمية شاملة تغطي جميع جوانب العملية الأكاديمية بدءاً من القبول وحتى التخرج، مع تكامل كامل بين نظام إدارة الطلاب (SIS) ونظام إدارة التعلم (LMS).</p>
+                    <div class="stats-box" style="margin-top: 1rem;">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-number">✓</span>
+                                <span class="stat-label">رفع كفاءة العمل</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">✓</span>
+                                <span class="stat-label">الشفافية والعدالة</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">✓</span>
+                                <span class="stat-label">تحسين تجربة الطالب</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">✓</span>
+                                <span class="stat-label">دعم اتخاذ القرار</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>توصيات للتنفيذ</h3>
+                    <ul class="bullet-list">
+                        <li><strong>التنفيذ المرحلي:</strong> البدء بالمكونات الأساسية ثم إضافة المتقدمة.</li>
+                        <li><strong>التدريب المستمر:</strong> تدريب جميع المستخدمين على استخدام المنظومة.</li>
+                        <li><strong>الدعم الفني:</strong> توفير فريق دعم متخصص.</li>
+                        <li><strong>التطوير المستمر:</strong> تحديث المنظومة باستمرار بناءً على الملاحظات.</li>
+                        <li><strong>التكامل مع الأنظمة الخارجية:</strong> المكتبة، الحضور الإلكتروني، البريد الإلكتروني.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- تذييل الكتاب -->
+        <div class="book-footer">
+            <h3>المنظومة الأكاديمية المتكاملة</h3>
+            <div class="signature-line"></div>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem;">نظام إدارة الطلاب SIS + نظام إدارة التعلم LMS</p>
+            <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+                <div><i class="fas fa-check-circle" style="color: var(--gold-color);"></i> 14 فصلاً</div>
+                <div><i class="fas fa-check-circle" style="color: var(--gold-color);"></i> 7 أدوار رئيسية</div>
+                <div><i class="fas fa-check-circle" style="color: var(--gold-color);"></i> أكثر من 200 مكون</div>
+                <div><i class="fas fa-check-circle" style="color: var(--gold-color);"></i> تكامل كامل</div>
+            </div>
+            <p style="margin-top: 3rem; font-size: 0.9rem; opacity: 0.7;">جميع الحقوق محفوظة © 2026 | الإصدار 2.0</p>
+        </div>
+    </div>
+
+    <script>
+        // تفعيل القائمة الجانبية
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function closeSidebar() {
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        }
+
+        // تحديث الرابط النشط عند التمرير
+        window.addEventListener('scroll', function() {
+            let sections = document.querySelectorAll('.book-section');
+            let navLinks = document.querySelectorAll('.toc-link');
+            
+            sections.forEach((section, index) => {
+                let top = section.offsetTop - 100;
+                let bottom = top + section.offsetHeight;
+                let scroll = window.scrollY;
+                
+                if (scroll >= top && scroll < bottom) {
+                    navLinks.forEach(link => link.classList.remove('active'));
+                    navLinks[index + 1].classList.add('active'); // +1 لأن أول رابط للملخص التنفيذي
+                }
+            });
+        });
+
+        // تأثيرات التمرير
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
