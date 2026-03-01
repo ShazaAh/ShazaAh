@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد المستشفى الاحترافي</title>
+    <!-- Font Awesome للايقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts للخط العربي (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* الحاوية الرئيسية */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* رأس الصفحة */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-title h1 {
+            font-size: 2rem;
+            color: #2d3748;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .header-title p {
+            color: #718096;
+            font-weight: 400;
+            font-size: 0.95rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-box {
+            background: white;
+            border-radius: 15px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .search-box i {
+            color: #a0aec0;
+            margin-left: 10px;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 0.95rem;
+            width: 200px;
+        }
+
+        .search-box input::placeholder {
+            color: #cbd5e0;
+        }
+
+        .notification-icon {
+            background: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .notification-icon:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 5px 20px 5px 5px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .user-profile span {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        /* بطاقات الإحصائيات */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+        }
+
+        .stat-info h3 {
+            font-size: 0.9rem;
+            color: #a0aec0;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .stat-info .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+        }
+
+        /* قسم الجدول والأزرار */
+        .table-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .table-header h2 {
+            color: #2d3748;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-outline:hover {
+            background: #f7fafc;
+            border-color: #667eea;
+        }
+
+        /* الداتا تيبل */
+        .data-table {
+            overflow-x: auto;
+            border-radius: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        thead {
+            background: #f7fafc;
+        }
+
+        th {
+            padding: 15px;
+            text-align: right;
+            color: #4a5568;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #2d3748;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #faf5ff;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-confirmed {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-pending {
+            background: #feebc8;
+            color: #7b341e;
+        }
+
+        .status-cancelled {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .action-icons {
+            display: flex;
+            gap: 10px;
+            color: #a0aec0;
+        }
+
+        .action-icons i {
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .action-icons i:hover {
+            color: #667eea;
+        }
+
+        /* تذييل الصفحة */
+        .dashboard-footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #718096;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* تحسينات للأجهزة المحمولة */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 20px;
+            }
+            
+            .header-title h1 {
+                font-size: 1.5rem;
+            }
+            
+            .search-box input {
+                width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- رأس الصفحة -->
+        <div class="dashboard-header">
+            <div class="header-title">
+                <h1>نظام إدارة المستشفى</h1>
+                <p>مرحباً بعودتك، دكتورة سارة ✨</p>
+            </div>
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="بحث عن مريض...">
+                </div>
+                <div class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="user-profile">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User">
+                    <span>د. سارة أحمد</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- بطاقات الإحصائيات -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>إجمالي المرضى</h3>
+                    <span class="stat-number">1,248</span>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>المرضى الحاليين</h3>
+                    <span class="stat-number">342</span>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-procedures"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>المواعيد اليوم</h3>
+                    <span class="stat-number">56</span>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>العمليات الجراحية</h3>
+                    <span class="stat-number">12</span>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-syringe"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم الجدول الرئيسي -->
+        <div class="table-section">
+            <div class="table-header">
+                <h2><i class="fas fa-list" style="margin-left: 8px; color: #667eea;"></i> قائمة المرضى والمواعيد</h2>
+                <div class="table-actions">
+                    <!-- أزرار تحميل PDF و Excel -->
+                    <button class="btn btn-outline" onclick="downloadPDF()">
+                        <i class="fas fa-file-pdf" style="color: #e53e3e;"></i> PDF
+                    </button>
+                    <button class="btn btn-outline" onclick="downloadExcel()">
+                        <i class="fas fa-file-excel" style="color: #48bb78;"></i> Excel
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i> إضافة مريض
+                    </button>
+                </div>
+            </div>
+
+            <!-- الداتا تيبل -->
+            <div class="data-table">
+                <table id="patientsTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>اسم المريض</th>
+                            <th>العمر</th>
+                            <th>القسم</th>
+                            <th>تاريخ الموعد</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>001</td>
+                            <td>أحمد محمود</td>
+                            <td>45</td>
+                            <td>القلب</td>
+                            <td>2024-02-20</td>
+                            <td><span class="status-badge status-confirmed">مؤكد</span></td>
+                            <td>
+                                <div class="action-icons">
+                                    <i class="fas fa-edit" title="تعديل"></i>
+                                    <i class="fas fa-trash-alt" title="حذف" style="color: #f56565;"></i>
+                                    <i class="fas fa-eye" title="عرض"></i>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>002</td>
+                            <td>سارة علي</td>
+                            <td>32</td>
+                            <td>الأطفال</td>
+                            <td>2024-02-20</td>
+                            <td><span class="status-badge status-pending">معلق</span></td>
+                            <td>
+                                <div class="action-icons">
+                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-trash-alt" style="color: #f56565;"></i>
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>003</td>
+                            <td>محمد إبراهيم</td>
+                            <td>58</td>
+                            <td>العظام</td>
+                            <td>2024-02-21</td>
+                            <td><span class="status-badge status-confirmed">مؤكد</span></td>
+                            <td>
+                                <div class="action-icons">
+                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-trash-alt" style="color: #f56565;"></i>
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>004</td>
+                            <td>فاطمة الزهراء</td>
+                            <td>27</td>
+                            <td>النساء والتوليد</td>
+                            <td>2024-02-19</td>
+                            <td><span class="status-badge status-cancelled">ملغي</span></td>
+                            <td>
+                                <div class="action-icons">
+                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-trash-alt" style="color: #f56565;"></i>
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>005</td>
+                            <td>يوسف أحمد</td>
+                            <td>22</td>
+                            <td>الطوارئ</td>
+                            <td>2024-02-22</td>
+                            <td><span class="status-badge status-pending">معلق</span></td>
+                            <td>
+                                <div class="action-icons">
+                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-trash-alt" style="color: #f56565;"></i>
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- شريط الترقيم البسيط (Pagination) -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                <span style="color: #718096;">عرض 1 - 5 من 124 مريض</span>
+                <div style="display: flex; gap: 5px;">
+                    <button class="btn btn-outline" style="padding: 5px 10px;"><i class="fas fa-chevron-right"></i></button>
+                    <button class="btn btn-primary" style="padding: 5px 12px;">1</button>
+                    <button class="btn btn-outline" style="padding: 5px 12px;">2</button>
+                    <button class="btn btn-outline" style="padding: 5px 12px;">3</button>
+                    <button class="btn btn-outline" style="padding: 5px 10px;"><i class="fas fa-chevron-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- تذييل الصفحة -->
+        <div class="dashboard-footer">
+            <p>© 2024 نظام إدارة المستشفى المتطور. جميع الحقوق محفوظة.</p>
+        </div>
+    </div>
+
+    <!-- جافا سكريبت لمحاكاة تحميل الملفات (للتجربة) -->
+    <script>
+        function downloadPDF() {
+            alert("سيتم تحميل ملف PDF يحتوي على بيانات الجدول الحالية (محاكاة لبيئة تجريبية).\nفي التطبيق الفعلي، سيتم إنشاء ملف PDF حقيقي.");
+        }
+
+        function downloadExcel() {
+            alert("سيتم تحميل ملف Excel (CSV) يحتوي على بيانات الجدول (محاكاة لبيئة تجريبية).\nفي التطبيق الفعلي، سيتم إنشاء ملف Excel حقيقي.");
+            
+            // محاكاة بسيطة: إنشاء رابط CSV وتحميله (تجربة خفيفة)
+            // هذه مجرد إضافة بسيطة لتجربة فعّالة، لكن المطلوب كان "ابعتهالى html وانا اجربها الاول"
+            // يمكنك إلغاء التعليق على الأسطر التالية إذا أردت تجربة تحميل حقيقي (سيتم تحميل ملف صغير)
+            /*
+            const table = document.getElementById('patientsTable');
+            let csv = [];
+            let rows = table.querySelectorAll('tr');
+            for (let i = 0; i < rows.length; i++) {
+                let row = [], cols = rows[i].querySelectorAll('td, th');
+                for (let j = 0; j < cols.length; j++) {
+                    let cellText = cols[j].innerText.replace(/,/g, '،'); // تجنب مشاكل CSV
+                    row.push('"' + cellText + '"');
+                }
+                csv.push(row.join(','));
+            }
+            let csvFile = new Blob([csv.join('\n')], {type: 'text/csv'});
+            let downloadLink = document.createElement('a');
+            downloadLink.download = 'patients_data.csv';
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = 'none';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            */
+        }
+
+        // إضافة تأثيرات بسيطة للأزرار
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (!this.classList.contains('btn-outline') && !this.classList.contains('btn-primary')) {
+                    // منع التنبيهات المتعددة من أزرار التحميل
+                    if (this.innerText.includes('PDF') || this.innerText.includes('Excel')) {
+                        // الوظائف مربوطة بالفعل بـ onclick
+                        return;
+                    }
+                }
+                if (this.innerText.includes('إضافة مريض')) {
+                    alert('نافذة إضافة مريض جديد (تجريبي)');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

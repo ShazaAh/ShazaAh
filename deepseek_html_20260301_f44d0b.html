@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>لوحة شؤون الطلاب | أحمد السيد</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts - Cairo + Tajawal for modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+            --dark: #1e293b;
+            --light: #f8f9fa;
+            --gray: #64748b;
+            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+            --gradient-hover: linear-gradient(135deg, var(--secondary), var(--accent));
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Tajawal', 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ========== SIDEBAR STYLES ========== */
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 320px;
+            height: 100vh;
+            background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+            backdrop-filter: blur(20px);
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid rgba(67, 97, 238, 0.1);
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(100%);
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(100%);
+                box-shadow: -20px 0 50px rgba(0,0,0,0.2);
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+        }
+
+        /* Sidebar Header */
+        .sidebar-header {
+            padding: 30px 25px;
+            background: linear-gradient(135deg, var(--primary)10, var(--secondary)05);
+            border-bottom: 2px solid rgba(67, 97, 238, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .logo-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+            transform: rotate(-5deg);
+            transition: all 0.3s ease;
+        }
+
+        .logo-icon:hover {
+            transform: rotate(0deg) scale(1.05);
+        }
+
+        .logo-text h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Student Profile Card */
+        .profile-card {
+            margin: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffffff, #f8faff);
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(67, 97, 238, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient);
+        }
+
+        .profile-avatar {
+            width: 70px;
+            height: 70px;
+            background: var(--gradient);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
+        }
+
+        .profile-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .profile-id {
+            color: var(--gray);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .profile-id i {
+            color: var(--primary);
+        }
+
+        .profile-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(6, 214, 160, 0.1);
+            color: var(--success);
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .profile-status i {
+            font-size: 0.6rem;
+        }
+
+        /* Navigation Menu */
+        .nav-menu {
+            flex: 1;
+            padding: 10px 15px;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 25px;
+        }
+
+        .nav-section-title {
+            padding: 10px 20px;
+            color: var(--gray);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            margin: 5px 0;
+            border-radius: 16px;
+            color: var(--gray);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: var(--gradient);
+            opacity: 0.1;
+            transition: width 0.3s ease;
+        }
+
+        .nav-item:hover::before {
+            width: 100%;
+        }
+
+        .nav-item i {
+            width: 30px;
+            font-size: 1.3rem;
+            margin-left: 15px;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item span {
+            font-size: 1rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-item .badge {
+            margin-right: auto;
+            background: var(--accent);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .nav-item:hover {
+            color: var(--primary);
+            transform: translateX(-5px);
+        }
+
+        .nav-item.active {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+        }
+
+        .nav-item.active i {
+            color: white;
+        }
+
+        /* Sidebar Footer */
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 2px solid rgba(67, 97, 238, 0.1);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: var(--danger);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(239, 71, 111, 0.05);
+        }
+
+        .logout-btn i {
+            width: 30px;
+            font-size: 1.3rem;
+            margin-left: 15px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 71, 111, 0.1);
+            transform: translateX(-5px);
+        }
+
+        /* Toggle Button - Enhanced */
+        .sidebar-toggle {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 15px 30px rgba(67, 97, 238, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-toggle:hover {
+            transform: scale(1.1) rotate(90deg);
+            background: var(--gradient-hover);
+            box-shadow: 0 20px 40px rgba(247, 37, 133, 0.4);
+        }
+
+        .sidebar-toggle i {
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-toggle.active i {
+            transform: rotate(180deg);
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar-toggle {
+                display: flex;
+            }
+        }
+
+        /* Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            margin-right: 320px;
+            padding: 30px;
+            transition: margin 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-right: 0;
+                padding: 20px;
+            }
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .welcome-avatar {
+            width: 100px;
+            height: 100px;
+            background: var(--gradient);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            box-shadow: 0 20px 40px rgba(67, 97, 238, 0.3);
+        }
+
+        .welcome-text h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .welcome-text .student-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray);
+            background: var(--light);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+        }
+
+        .meta-item i {
+            color: var(--primary);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 30px;
+            padding: 25px;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .stat-title {
+            color: var(--gray);
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .stat-icon.gpa { background: linear-gradient(135deg, var(--primary)15, var(--secondary)15); color: var(--primary); }
+        .stat-icon.courses { background: linear-gradient(135deg, var(--accent)15, var(--danger)15); color: var(--accent); }
+        .stat-icon.hours { background: linear-gradient(135deg, #4facfe20, #00f2fe20); color: #4facfe; }
+        .stat-icon.rank { background: linear-gradient(135deg, var(--success)15, #38f9d720); color: var(--success); }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--dark);
+            line-height: 1.2;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: var(--success);
+            margin-top: 10px;
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 968px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 30px;
+            padding: 25px;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-xl);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: var(--primary);
+            background: linear-gradient(135deg, var(--primary)15, var(--secondary)15);
+            padding: 10px;
+            border-radius: 15px;
+        }
+
+        /* Schedule Table */
+        .schedule-container {
+            overflow-x: auto;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .schedule-table th {
+            text-align: right;
+            padding: 15px;
+            background: var(--light);
+            color: var(--dark);
+            font-weight: 700;
+            border-radius: 15px;
+        }
+
+        .schedule-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eef2f6;
+        }
+
+        .day-badge {
+            background: var(--gradient);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .time {
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .room {
+            background: var(--light);
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+
+        /* Courses List */
+        .courses-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-left: 5px;
+        }
+
+        .courses-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .courses-list::-webkit-scrollbar-track {
+            background: var(--light);
+            border-radius: 10px;
+        }
+
+        .courses-list::-webkit-scrollbar-thumb {
+            background: var(--gradient);
+            border-radius: 10px;
+        }
+
+        .course-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: var(--light);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .course-item:hover {
+            border-color: var(--primary);
+            transform: translateX(-5px);
+            background: white;
+        }
+
+        .course-code {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-left: 20px;
+        }
+
+        .course-details {
+            flex: 1;
+        }
+
+        .course-name {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .course-info {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .course-info i {
+            color: var(--primary);
+        }
+
+        .course-grade {
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .grade-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .grade-letter {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-weight: 600;
+        }
+
+        /* Chart Styles */
+        .chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .welcome-section {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .student-meta {
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card, .stat-card {
+            animation: slideIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-chevron-right"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-wrapper">
+                <div class="logo-icon">
+                    <i class="fas fa-university"></i>
+                </div>
+                <div class="logo-text">
+                    <h2>جامعة القاهرة</h2>
+                    <p>نظام إدارة التعلم</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Profile Card -->
+        <div class="profile-card" data-aos="fade-left">
+            <div class="profile-avatar">أ</div>
+            <div class="profile-name">أحمد محمد السيد</div>
+            <div class="profile-id">
+                <i class="fas fa-id-card"></i>
+                <span>2023101234</span>
+            </div>
+            <div class="profile-status">
+                <i class="fas fa-circle"></i>
+                <span>فصل ربيع 2024 - مسجل</span>
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <div class="nav-menu">
+            <div class="nav-section">
+                <div class="nav-section-title">الرئيسية</div>
+                <div class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>لوحة التحكم</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-book"></i>
+                    <span>المواد الدراسية</span>
+                    <span class="badge">6</span>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">التعليمات</div>
+                <div class="nav-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>الجدول الدراسي</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-tasks"></i>
+                    <span>المهام والواجبات</span>
+                    <span class="badge">3</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>الامتحانات</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>التقارير والتقديرات</span>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">الخدمات</div>
+                <div class="nav-item">
+                    <i class="fas fa-credit-card"></i>
+                    <span>الرسوم الدراسية</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-headset"></i>
+                    <span>الدعم الفني</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>الإعدادات</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer">
+            <div class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>تسجيل الخروج</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- Header -->
+        <div class="header" data-aos="fade-down">
+            <div class="welcome-section">
+                <div class="welcome-avatar">أ</div>
+                <div class="welcome-text">
+                    <h1>أحمد محمد السيد</h1>
+                    <div class="student-meta">
+                        <span class="meta-item">
+                            <i class="fas fa-id-card"></i>
+                            الرقم الجامعي: 2023101234
+                        </span>
+                        <span class="meta-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            كلية الهندسة - حاسبات
+                        </span>
+                        <span class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            الفصل الدراسي: ربيع 2024
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-header">
+                    <span class="stat-title">المعدل التراكمي</span>
+                    <div class="stat-icon gpa">
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <div class="stat-value">3.75</div>
+                <div class="stat-change">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>+0.2 عن الفصل الماضي</span>
+                </div>
+            </div>
+
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-header">
+                    <span class="stat-title">المواد المسجلة</span>
+                    <div class="stat-icon courses">
+                        <i class="fas fa-book"></i>
+                    </div>
+                </div>
+                <div class="stat-value">6</div>
+                <div class="stat-change">
+                    <i class="fas fa-check-circle"></i>
+                    <span>جميعها نشطة</span>
+                </div>
+            </div>
+
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-header">
+                    <span class="stat-title">الساعات المعتمدة</span>
+                    <div class="stat-icon hours">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="stat-value">18</div>
+                <div class="stat-change">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>هذا الفصل</span>
+                </div>
+            </div>
+
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="stat-header">
+                    <span class="stat-title">الترتيب على الدفعة</span>
+                    <div class="stat-icon rank">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                </div>
+                <div class="stat-value">#15</div>
+                <div class="stat-change">
+                    <i class="fas fa-users"></i>
+                    <span>من 120 طالب</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Schedule Card -->
+            <div class="card" data-aos="fade-left">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-calendar-alt"></i>
+                        الجدول الدراسي
+                    </div>
+                    <span class="day-badge">الأسبوع الرابع</span>
+                </div>
+                <div class="schedule-container">
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>اليوم</th>
+                                <th>المادة</th>
+                                <th>الوقت</th>
+                                <th>القاعة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="day-badge" style="background: #f093fb;">الأحد</span></td>
+                                <td>تحليل وتصميم نظم</td>
+                                <td class="time">10:00 - 12:00</td>
+                                <td><span class="room">قاعة 301</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="day-badge" style="background: #4facfe;">الإثنين</span></td>
+                                <td>قواعد البيانات</td>
+                                <td class="time">09:00 - 11:00</td>
+                                <td><span class="room">قاعة 205</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="day-badge" style="background: #43e97b;">الثلاثاء</span></td>
+                                <td>برمجة متقدمة</td>
+                                <td class="time">13:00 - 15:00</td>
+                                <td><span class="room">مختبر 3</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="day-badge" style="background: #fa709a;">الأربعاء</span></td>
+                                <td>شبكات الحاسوب</td>
+                                <td class="time">11:00 - 13:00</td>
+                                <td><span class="room">قاعة 401</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="day-badge" style="background: #ff9a44;">الخميس</span></td>
+                                <td>أمن المعلومات</td>
+                                <td class="time">09:00 - 11:00</td>
+                                <td><span class="room">قاعة 105</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Grades Chart Card -->
+            <div class="card" data-aos="fade-right">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-chart-pie"></i>
+                        توزيع التقديرات
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div class="chart-container">
+                        <canvas id="gradesChart"></canvas>
+                    </div>
+                    <div class="grades-summary">
+                        <div class="grade-stat">
+                            <div class="grade-stat-label">
+                                <span>ممتاز (A)</span>
+                                <span>45%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%;"></div>
+                            </div>
+                        </div>
+                        <div class="grade-stat">
+                            <div class="grade-stat-label">
+                                <span>جيد جداً (B)</span>
+                                <span>30%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 30%;"></div>
+                            </div>
+                        </div>
+                        <div class="grade-stat">
+                            <div class="grade-stat-label">
+                                <span>جيد (C)</span>
+                                <span>20%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 20%;"></div>
+                            </div>
+                        </div>
+                        <div class="grade-stat">
+                            <div class="grade-stat-label">
+                                <span>مقبول (D)</span>
+                                <span>5%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 5%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Courses Card -->
+        <div class="card" style="margin-top: 25px;" data-aos="fade-up">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-book-open"></i>
+                    المواد المسجلة والتقديرات
+                </div>
+                <span class="day-badge">المعدل الفصلي: 3.82</span>
+            </div>
+            <div class="courses-list">
+                <div class="course-item">
+                    <div class="course-code">CS301</div>
+                    <div class="course-details">
+                        <div class="course-name">تحليل وتصميم النظم</div>
+                        <div class="course-info">
+                            <span><i class="fas fa-clock"></i> 3 ساعات</span>
+                            <span><i class="fas fa-chalkboard-teacher"></i> د. محمد أحمد</span>
+                        </div>
+                    </div>
+                    <div class="course-grade">
+                        <div class="grade-value">3.7</div>
+                        <div class="grade-letter">A-</div>
+                    </div>
+                </div>
+
+                <div class="course-item">
+                    <div class="course-code">CS302</div>
+                    <div class="course-details">
+                        <div class="course-name">قواعد البيانات المتقدمة</div>
+                        <div class="course-info">
+                            <span><i class="fas fa-clock"></i> 3 ساعات</span>
+                            <span><i class="fas fa-chalkboard-teacher"></i> د. سارة علي</span>
+                        </div>
+                    </div>
+                    <div class="course-grade">
+                        <div class="grade-value">4.0</div>
+                        <div class="grade-letter">A+</div>
+                    </div>
+                </div>
+
+                <div class="course-item">
+                    <div class="course-code">CS303</div>
+                    <div class="course-details">
+                        <div class="course-name">برمجة تطبيقات الويب</div>
+                        <div class="course-info">
+                            <span><i class="fas fa-clock"></i> 3 ساعات</span>
+                            <span><i class="fas fa-chalkboard-teacher"></i> د. خالد عمر</span>
+                        </div>
+                    </div>
+                    <div class="course-grade">
+                        <div class="grade-value">3.3</div>
+                        <div class="grade-letter">B+</div>
+                    </div>
+                </div>
+
+                <div class="course-item">
+                    <div class="course-code">CS304</div>
+                    <div class="course-details">
+                        <div class="course-name">شبكات الحاسوب</div>
+                        <div class="course-info">
+                            <span><i class="fas fa-clock"></i> 3 ساعات</span>
+                            <span><i class="fas fa-chalkboard-teacher"></i> د. أحمد السيد</span>
+                        </div>
+                    </div>
+                    <div class="course-grade">
+                        <div class="grade-value">3.0</div>
+                        <div class="grade-letter">B</div>
+                    </div>
+                </div>
+
+                <div class="course-item">
+                    <div class="course-code">CS305</div>
+                    <div class="course-details">
+                        <div class="course-name">أمن المعلومات</div>
+                        <div class="course-info">
+                            <span><i class="fas fa-clock"></i> 3 ساعات</span>
+                            <span><i class="fas fa-chalkboard-teacher"></i> د. نادية حسن</span>
+                        </div>
+                    </div>
+                    <div class="course-grade">
+                        <div class="grade-value">4.0</div>
+                        <div class="grade-letter">A</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+
+        // Get elements
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('sidebarToggle');
+        const overlay = document.getElementById('sidebarOverlay');
+        const mainContent = document.getElementById('mainContent');
+
+        // Toggle sidebar function
+        function toggleSidebar() {
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+            toggleBtn.classList.toggle('active');
+            
+            // Change icon
+            const icon = toggleBtn.querySelector('i');
+            if (sidebar.classList.contains('mobile-open')) {
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-left');
+            } else {
+                icon.classList.remove('fa-chevron-left');
+                icon.classList.add('fa-chevron-right');
+            }
+        }
+
+        // Event listeners
+        toggleBtn.addEventListener('click', toggleSidebar);
+        
+        overlay.addEventListener('click', toggleSidebar);
+
+        // Close sidebar on window resize if open
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('active');
+                toggleBtn.classList.remove('active');
+                const icon = toggleBtn.querySelector('i');
+                icon.classList.remove('fa-chevron-left');
+                icon.classList.add('fa-chevron-right');
+            }
+        });
+
+        // Create the grades chart
+        const ctx = document.getElementById('gradesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['ممتاز (A)', 'جيد جداً (B)', 'جيد (C)', 'مقبول (D)'],
+                datasets: [{
+                    data: [45, 30, 20, 5],
+                    backgroundColor: [
+                        '#4361ee',
+                        '#7209b7',
+                        '#f72585',
+                        '#ef476f'
+                    ],
+                    borderWidth: 0,
+                    borderRadius: 10,
+                    spacing: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'white',
+                        titleColor: '#1e293b',
+                        bodyColor: '#64748b',
+                        borderColor: '#4361ee',
+                        borderWidth: 2,
+                        padding: 12,
+                        cornerRadius: 12
+                    }
+                }
+            }
+        });
+
+        // Add active class to nav items
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                navItems.forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

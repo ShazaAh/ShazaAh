@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Sigma Student Dashboard | أحمد السيد</title>
+    <!-- Font Awesome 6 Pro -->
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/all.css">
+    <!-- Google Fonts - Modern Arabic Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js 4 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Swiper JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Modern Color Palette 2024 - Neon Dreams */
+            --primary-base: #4158D0;
+            --primary-gradient: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+            --secondary-gradient: linear-gradient(160deg, #0093E9 0%, #80D0C7 100%);
+            --accent-gradient: linear-gradient(225deg, #FA8BFF 0%, #2BD2FF 52%, #2BFF88 90%);
+            --glass-gradient: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+            --dark-bg: #0A0F1E;
+            --card-bg: rgba(18, 25, 40, 0.95);
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255,255,255,0.7);
+            --text-muted: rgba(255,255,255,0.5);
+            --border-glow: rgba(255,255,255,0.1);
+            --success: #2BFF88;
+            --warning: #FFD93D;
+            --danger: #FF6B6B;
+            --info: #2BD2FF;
+            
+            /* Shadows */
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.5);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.6);
+            --glow: 0 0 30px rgba(65, 88, 208, 0.3);
+            --glow-strong: 0 0 50px rgba(200, 80, 192, 0.4);
+        }
+
+        body {
+            font-family: 'IBM Plex Sans Arabic', 'Almarai', sans-serif;
+            background: #0A0F1E;
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(125deg, #0A0F1E 0%, #1A1F30 50%, #0A0F1E 100%);
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(65,88,208,0.3) 0%, transparent 50%);
+            animation: rotate 30s linear infinite;
+        }
+
+        .bg-animation::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(200,80,192,0.2) 0%, transparent 60%);
+            animation: rotate 40s linear infinite reverse;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ========== SIDEBAR - ULTRA MODERN ========== */
+        .sidebar {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            bottom: 20px;
+            width: 320px;
+            background: rgba(18, 25, 40, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 40px;
+            border: 1px solid var(--border-glow);
+            box-shadow: var(--shadow-xl), var(--glow);
+            z-index: 1000;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.1), transparent 70%);
+            pointer-events: none;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(calc(100% + 40px));
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                right: 0;
+                top: 0;
+                bottom: 0;
+                border-radius: 0 40px 40px 0;
+                transform: translateX(100%);
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+        }
+
+        /* Sidebar Header */
+        .sidebar-header {
+            padding: 30px;
+            position: relative;
+        }
+
+        .logo-3d {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .logo-cube {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-gradient);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            transform: rotate(-10deg) skewX(-5deg);
+            box-shadow: var(--glow-strong);
+            transition: all 0.5s ease;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .logo-cube i {
+            transform: rotate(10deg) skewX(5deg);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: rotate(-10deg) skewX(-5deg) translateY(0); }
+            50% { transform: rotate(-10deg) skewX(-5deg) translateY(-10px); }
+        }
+
+        .logo-text h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .logo-text p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        /* Profile Card - Glassmorphism */
+        .profile-glass {
+            margin: 0 20px 20px;
+            padding: 25px;
+            background: var(--glass-gradient);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            border: 1px solid var(--border-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-glass::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            animation: rotate 10s linear infinite;
+        }
+
+        .avatar-glow {
+            width: 80px;
+            height: 80px;
+            background: var(--accent-gradient);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: var(--glow-strong);
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .profile-info h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            background: linear-gradient(135deg, #fff, #e2e8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .profile-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin: 10px 0;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            background: rgba(43, 255, 136, 0.1);
+            border: 1px solid rgba(43, 255, 136, 0.3);
+            border-radius: 30px;
+            color: var(--success);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Navigation - Futuristic */
+        .nav-menu {
+            flex: 1;
+            padding: 10px 15px;
+            overflow-y: auto;
+        }
+
+        .nav-menu::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .nav-menu::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+
+        .nav-menu::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 10px;
+        }
+
+        .nav-group {
+            margin-bottom: 25px;
+        }
+
+        .nav-group-title {
+            padding: 10px 20px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-item-3d {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            margin: 5px 0;
+            border-radius: 20px;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid transparent;
+        }
+
+        .nav-item-3d::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 0;
+        }
+
+        .nav-item-3d:hover::before {
+            opacity: 0.1;
+        }
+
+        .nav-item-3d:hover {
+            border-color: rgba(255,255,255,0.1);
+            transform: translateX(-5px);
+            color: white;
+        }
+
+        .nav-item-3d.active {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: var(--glow);
+        }
+
+        .nav-item-3d i {
+            width: 30px;
+            font-size: 1.3rem;
+            margin-left: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-item-3d span {
+            position: relative;
+            z-index: 1;
+            font-weight: 600;
+        }
+
+        .nav-item-3d .badge-pulse {
+            margin-right: auto;
+            background: var(--danger);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Sidebar Footer */
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-glow);
+        }
+
+        .logout-neon {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: var(--danger);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .logout-neon:hover {
+            border-color: var(--danger);
+            background: rgba(255, 107, 107, 0.1);
+            transform: translateX(-5px);
+        }
+
+        .logout-neon i {
+            width: 30px;
+            font-size: 1.3rem;
+            margin-left: 15px;
+        }
+
+        /* Toggle Button - 3D */
+        .toggle-3d {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 65px;
+            height: 65px;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: var(--glow-strong);
+            transition: all 0.3s ease;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .toggle-3d:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        @media (max-width: 1024px) {
+            .toggle-3d {
+                display: flex;
+            }
+        }
+
+        /* Overlay */
+        .overlay-modern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .overlay-modern.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            margin-right: 360px;
+            padding: 20px;
+            transition: margin 0.5s ease;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-right: 0;
+            }
+        }
+
+        /* Header - Holographic */
+        .holographic-header {
+            background: rgba(18, 25, 40, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-glow);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .holographic-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                transparent 30%, 
+                rgba(255,255,255,0.1) 50%,
+                transparent 70%);
+            animation: holographic 10s linear infinite;
+        }
+
+        @keyframes holographic {
+            0% { transform: translateX(-50%) translateY(-50%) rotate(0deg); }
+            100% { transform: translateX(-50%) translateY(-50%) rotate(360deg); }
+        }
+
+        .welcome-3d {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .avatar-holo {
+            width: 120px;
+            height: 120px;
+            background: var(--accent-gradient);
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            box-shadow: var(--glow-strong);
+            border: 2px solid rgba(255,255,255,0.2);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .holo-text h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #a5b4fc, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .meta-chip {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-glow);
+            border-radius: 30px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .chip i {
+            color: var(--info);
+        }
+
+        /* Stats Cards - Neon */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-neon {
+            background: rgba(18, 25, 40, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 25px;
+            border: 1px solid var(--border-glow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-neon::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary-gradient);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .stat-neon:hover::after {
+            transform: translateX(0);
+        }
+
+        .stat-neon:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--glow);
+            border-color: var(--primary-base);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .stat-title {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .stat-icon-3d {
+            width: 60px;
+            height: 60px;
+            background: var(--glass-gradient);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border: 1px solid var(--border-glow);
+            transform: rotate(5deg) skewX(-5deg);
+            transition: all 0.3s ease;
+        }
+
+        .stat-neon:hover .stat-icon-3d {
+            transform: rotate(0deg) skewX(0deg);
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #e2e8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--success);
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        /* Main Grid */
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 968px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards - Glassmorphism */
+        .glass-card {
+            background: rgba(18, 25, 40, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 25px;
+            border: 1px solid var(--border-glow);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            box-shadow: var(--glow);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+
+        .card-title i {
+            background: var(--primary-gradient);
+            padding: 12px;
+            border-radius: 18px;
+            font-size: 1.2rem;
+        }
+
+        .badge-3d {
+            padding: 8px 18px;
+            background: var(--primary-gradient);
+            border-radius: 30px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: var(--glow);
+        }
+
+        /* Schedule Table */
+        .schedule-scroll {
+            overflow-x: auto;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .schedule-table th {
+            text-align: right;
+            padding: 15px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border-glow);
+        }
+
+        .schedule-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-glow);
+            color: var(--text-primary);
+        }
+
+        .day-chip {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .time-chip {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .room-chip {
+            background: rgba(255,255,255,0.05);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-glow);
+        }
+
+        /* Courses List */
+        .courses-scroll {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-left: 5px;
+        }
+
+        .courses-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .courses-scroll::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+
+        .courses-scroll::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 10px;
+        }
+
+        .course-item-3d {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 30px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-glow);
+            transition: all 0.3s ease;
+        }
+
+        .course-item-3d:hover {
+            background: rgba(255,255,255,0.05);
+            transform: translateX(-10px);
+            border-color: var(--primary-base);
+        }
+
+        .course-code-3d {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-gradient);
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-left: 20px;
+            transform: rotate(-5deg) skewX(-5deg);
+            box-shadow: var(--glow);
+        }
+
+        .course-details {
+            flex: 1;
+        }
+
+        .course-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .course-meta {
+            display: flex;
+            gap: 15px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .course-meta i {
+            color: var(--info);
+        }
+
+        .grade-3d {
+            text-align: center;
+        }
+
+        .grade-number {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--success), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .grade-letter {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Chart Container */
+        .chart-3d {
+            height: 200px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .grade-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .grade-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .progress-3d {
+            height: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-3d-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            border-radius: 10px;
+            position: relative;
+            animation: progressGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes progressGlow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .welcome-3d {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .meta-chip {
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .glass-card, .stat-neon {
+            animation: fadeInScale 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- 3D Toggle Button -->
+    <button class="toggle-3d" id="toggle3d">
+        <i class="fa-solid fa-bars-staggered"></i>
+    </button>
+
+    <!-- Modern Overlay -->
+    <div class="overlay-modern" id="modernOverlay"></div>
+
+    <!-- Futuristic Sidebar -->
+    <aside class="sidebar" id="modernSidebar">
+        <div class="sidebar-header">
+            <div class="logo-3d">
+                <div class="logo-cube">
+                    <i class="fa-solid fa-cube"></i>
+                </div>
+                <div class="logo-text">
+                    <h2>EduVerse</h2>
+                    <p>NEXT GEN LEARNING</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Glass Profile -->
+        <div class="profile-glass">
+            <div class="avatar-glow">
+                <span>أ</span>
+            </div>
+            <div class="profile-info">
+                <h3>أحمد محمد السيد</h3>
+                <div class="profile-meta">
+                    <i class="fa-regular fa-id-card"></i>
+                    <span>2023101234</span>
+                </div>
+                <div class="profile-meta">
+                    <i class="fa-regular fa-graduation-cap"></i>
+                    <span>هندسة الحاسبات</span>
+                </div>
+                <div class="status-badge">
+                    <i class="fa-solid fa-circle"></i>
+                    <span>مسجل - الفصل الربيعي</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation - Futuristic -->
+        <div class="nav-menu">
+            <div class="nav-group">
+                <div class="nav-group-title">الفضاء التعليمي</div>
+                <div class="nav-item-3d active">
+                    <i class="fa-solid fa-planet-ringed"></i>
+                    <span>المركز الكوني</span>
+                </div>
+                <div class="nav-item-3d">
+                    <i class="fa-solid fa-books"></i>
+                    <span>مكتبتي الرقمية</span>
+                    <span class="badge-pulse">6</span>
+                </div>
+                <div class="nav-item-3d">
+                    <i class="fa-solid fa-calendar-lines"></i>
+                    <span>الجدول التفاعلي</span>
+                </div>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-group-title">المسار الأكاديمي</div>
+                <div class="nav-item-3d">
+                    <i class="fa-solid fa-rocket"></i>
+                    <span>المهام الفضائية</span>
+                    <span class="badge-pulse">3</span>
+                </div>
+                <div class="nav-item-3d">
+                    <i class="fa-solid fa-chart-scatter"></i>
+                    <span>التحليلات والتقديرات</span>
+                </div>
+                <div class="nav-item-3d">
+                    <i class="fa-solid fa-certificate"></i>
+                    <span>الامتحانات</span>
+                </div>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-group-title">الخدمات الذكية</div>
+                <div class="nav-item-3d">
+                    <i class="fa-solid fa-credit-card"></i>
+                    <span>المحفظة التعليمية</span>
+                </div>
+                <div class="nav-item-3d">
+                    <i class="fa-solid fa-head-side-brain"></i>
+                    <span>الدعم الذكي</span>
+                </div>
+                <div class="nav-item-3d">
+                    <i class="fa-solid fa-gear-complex"></i>
+                    <span>الإعدادات المتقدمة</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="sidebar-footer">
+            <div class="logout-neon">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <span>مغادرة الفضاء</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Holographic Header -->
+        <div class="holographic-header" data-aos="fade-down">
+            <div class="welcome-3d">
+                <div class="avatar-holo">
+                    <span>أ</span>
+                </div>
+                <div class="holo-text">
+                    <h1>أحمد محمد السيد</h1>
+                    <div class="meta-chip">
+                        <span class="chip">
+                            <i class="fa-regular fa-id-card"></i>
+                            2023101234
+                        </span>
+                        <span class="chip">
+                            <i class="fa-regular fa-building-columns"></i>
+                            كلية الهندسة
+                        </span>
+                        <span class="chip">
+                            <i class="fa-regular fa-clock"></i>
+                            الفصل الربيعي 2024
+                        </span>
+                        <span class="chip">
+                            <i class="fa-regular fa-star"></i>
+                            المستوى المتقدم
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Neon Stats -->
+        <div class="stats-grid">
+            <div class="stat-neon" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-header">
+                    <span class="stat-title">المعدل الكوني</span>
+                    <div class="stat-icon-3d">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+                <div class="stat-value">3.75</div>
+                <div class="stat-trend">
+                    <i class="fa-solid fa-arrow-up"></i>
+                    <span>+0.2 عن الفصل الماضي</span>
+                </div>
+            </div>
+
+            <div class="stat-neon" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-header">
+                    <span class="stat-title">المواد المسجلة</span>
+                    <div class="stat-icon-3d">
+                        <i class="fa-solid fa-book"></i>
+                    </div>
+                </div>
+                <div class="stat-value">6</div>
+                <div class="stat-trend">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>جميعها نشطة</span>
+                </div>
+            </div>
+
+            <div class="stat-neon" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-header">
+                    <span class="stat-title">الساعات المعتمدة</span>
+                    <div class="stat-icon-3d">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                </div>
+                <div class="stat-value">18</div>
+                <div class="stat-trend">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <span>هذا الفصل</span>
+                </div>
+            </div>
+
+            <div class="stat-neon" data-aos="fade-up" data-aos-delay="400">
+                <div class="stat-header">
+                    <span class="stat-title">الترتيب المجري</span>
+                    <div class="stat-icon-3d">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                </div>
+                <div class="stat-value">#15</div>
+                <div class="stat-trend">
+                    <i class="fa-solid fa-users"></i>
+                    <span>من 120 طالب</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid-2col">
+            <!-- Schedule Card -->
+            <div class="glass-card" data-aos="fade-left">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fa-solid fa-calendar-lines"></i>
+                        الجدول الفضائي
+                    </div>
+                    <span class="badge-3d">الأسبوع الرابع</span>
+                </div>
+                <div class="schedule-scroll">
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>اليوم</th>
+                                <th>المادة</th>
+                                <th>الوقت</th>
+                                <th>القاعة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="day-chip" style="background: linear-gradient(135deg, #FF6B6B, #C850C0);">الأحد</span></td>
+                                <td>تحليل وتصميم نظم</td>
+                                <td class="time-chip">10:00 - 12:00</td>
+                                <td><span class="room-chip">قاعة 301</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="day-chip" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">الإثنين</span></td>
+                                <td>قواعد البيانات</td>
+                                <td class="time-chip">09:00 - 11:00</td>
+                                <td><span class="room-chip">قاعة 205</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="day-chip" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">الثلاثاء</span></td>
+                                <td>برمجة متقدمة</td>
+                                <td class="time-chip">13:00 - 15:00</td>
+                                <td><span class="room-chip">مختبر 3</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="day-chip" style="background: linear-gradient(135deg, #fa709a, #fee140);">الأربعاء</span></td>
+                                <td>شبكات الحاسوب</td>
+                                <td class="time-chip">11:00 - 13:00</td>
+                                <td><span class="room-chip">قاعة 401</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="day-chip" style="background: linear-gradient(135deg, #ff9a44, #ff6b6b);">الخميس</span></td>
+                                <td>أمن المعلومات</td>
+                                <td class="time-chip">09:00 - 11:00</td>
+                                <td><span class="room-chip">قاعة 105</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Chart Card -->
+            <div class="glass-card" data-aos="fade-right">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        توزيع التقديرات
+                    </div>
+                </div>
+                <div class="chart-3d">
+                    <canvas id="neonChart"></canvas>
+                </div>
+                <div class="grade-stats">
+                    <div class="grade-progress">
+                        <div class="progress-label">
+                            <span>ممتاز (A)</span>
+                            <span>45%</span>
+                        </div>
+                        <div class="progress-3d">
+                            <div class="progress-3d-fill" style="width: 45%;"></div>
+                        </div>
+                    </div>
+                    <div class="grade-progress">
+                        <div class="progress-label">
+                            <span>جيد جداً (B)</span>
+                            <span>30%</span>
+                        </div>
+                        <div class="progress-3d">
+                            <div class="progress-3d-fill" style="width: 30%;"></div>
+                        </div>
+                    </div>
+                    <div class="grade-progress">
+                        <div class="progress-label">
+                            <span>جيد (C)</span>
+                            <span>20%</span>
+                        </div>
+                        <div class="progress-3d">
+                            <div class="progress-3d-fill" style="width: 20%;"></div>
+                        </div>
+                    </div>
+                    <div class="grade-progress">
+                        <div class="progress-label">
+                            <span>مقبول (D)</span>
+                            <span>5%</span>
+                        </div>
+                        <div class="progress-3d">
+                            <div class="progress-3d-fill" style="width: 5%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Courses Card -->
+        <div class="glass-card" style="margin-top: 25px;" data-aos="fade-up">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fa-solid fa-books"></i>
+                    المواد المسجلة
+                </div>
+                <span class="badge-3d">المعدل: 3.82</span>
+            </div>
+            <div class="courses-scroll">
+                <div class="course-item-3d">
+                    <div class="course-code-3d">CS301</div>
+                    <div class="course-details">
+                        <div class="course-name">تحليل وتصميم النظم</div>
+                        <div class="course-meta">
+                            <span><i class="fa-regular fa-clock"></i> 3 ساعات</span>
+                            <span><i class="fa-regular fa-user-tie"></i> د. محمد أحمد</span>
+                        </div>
+                    </div>
+                    <div class="grade-3d">
+                        <div class="grade-number">3.7</div>
+                        <div class="grade-letter">A-</div>
+                    </div>
+                </div>
+
+                <div class="course-item-3d">
+                    <div class="course-code-3d">CS302</div>
+                    <div class="course-details">
+                        <div class="course-name">قواعد البيانات المتقدمة</div>
+                        <div class="course-meta">
+                            <span><i class="fa-regular fa-clock"></i> 3 ساعات</span>
+                            <span><i class="fa-regular fa-user-tie"></i> د. سارة علي</span>
+                        </div>
+                    </div>
+                    <div class="grade-3d">
+                        <div class="grade-number">4.0</div>
+                        <div class="grade-letter">A+</div>
+                    </div>
+                </div>
+
+                <div class="course-item-3d">
+                    <div class="course-code-3d">CS303</div>
+                    <div class="course-details">
+                        <div class="course-name">برمجة تطبيقات الويب</div>
+                        <div class="course-meta">
+                            <span><i class="fa-regular fa-clock"></i> 3 ساعات</span>
+                            <span><i class="fa-regular fa-user-tie"></i> د. خالد عمر</span>
+                        </div>
+                    </div>
+                    <div class="grade-3d">
+                        <div class="grade-number">3.3</div>
+                        <div class="grade-letter">B+</div>
+                    </div>
+                </div>
+
+                <div class="course-item-3d">
+                    <div class="course-code-3d">CS304</div>
+                    <div class="course-details">
+                        <div class="course-name">شبكات الحاسوب</div>
+                        <div class="course-meta">
+                            <span><i class="fa-regular fa-clock"></i> 3 ساعات</span>
+                            <span><i class="fa-regular fa-user-tie"></i> د. أحمد السيد</span>
+                        </div>
+                    </div>
+                    <div class="grade-3d">
+                        <div class="grade-number">3.0</div>
+                        <div class="grade-letter">B</div>
+                    </div>
+                </div>
+
+                <div class="course-item-3d">
+                    <div class="course-code-3d">CS305</div>
+                    <div class="course-details">
+                        <div class="course-name">أمن المعلومات</div>
+                        <div class="course-meta">
+                            <span><i class="fa-regular fa-clock"></i> 3 ساعات</span>
+                            <span><i class="fa-regular fa-user-tie"></i> د. نادية حسن</span>
+                        </div>
+                    </div>
+                    <div class="grade-3d">
+                        <div class="grade-number">4.0</div>
+                        <div class="grade-letter">A</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+
+        // Sidebar elements
+        const sidebar = document.getElementById('modernSidebar');
+        const toggleBtn = document.getElementById('toggle3d');
+        const overlay = document.getElementById('modernOverlay');
+
+        function toggleModernSidebar() {
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+            
+            const icon = toggleBtn.querySelector('i');
+            if (sidebar.classList.contains('mobile-open')) {
+                icon.classList.remove('fa-bars-staggered');
+                icon.classList.add('fa-xmark');
+            } else {
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars-staggered');
+            }
+        }
+
+        toggleBtn.addEventListener('click', toggleModernSidebar);
+        overlay.addEventListener('click', toggleModernSidebar);
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('active');
+                const icon = toggleBtn.querySelector('i');
+                icon.classList.remove('fa-xmark');
+                icon.classList.add('fa-bars-staggered');
+            }
+        });
+
+        // Neon Chart
+        const ctx = document.getElementById('neonChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['A', 'B', 'C', 'D'],
+                datasets: [{
+                    data: [45, 30, 20, 5],
+                    backgroundColor: [
+                        '#2BFF88',
+                        '#4158D0',
+                        '#C850C0',
+                        '#FF6B6B'
+                    ],
+                    borderWidth: 0,
+                    borderRadius: 20,
+                    spacing: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(18, 25, 40, 0.9)',
+                        titleColor: '#fff',
+                        bodyColor: 'rgba(255,255,255,0.7)',
+                        borderColor: '#4158D0',
+                        borderWidth: 2,
+                        padding: 12,
+                        cornerRadius: 12
+                    }
+                }
+            }
+        });
+
+        // Active nav item
+        const navItems = document.querySelectorAll('.nav-item-3d');
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                navItems.forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

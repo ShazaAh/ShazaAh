@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>منظومة شئون طلاب | لوحة التحكم المتطورة مع سايدبار</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SheetJS (XLSX) -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <!-- html2pdf -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* الحاوية الرئيسية مع السايدبار */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* ========== السايدبار ========== */
+        .sidebar {
+            width: 280px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-left: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 20px 0 30px -15px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            color: white;
+        }
+
+        /* الوضع المصغر للسايدبار */
+        .sidebar.collapsed {
+            width: 85px;
+        }
+
+        .sidebar.collapsed .logo-text,
+        .sidebar.collapsed .menu-text,
+        .sidebar.collapsed .user-name,
+        .sidebar.collapsed .sidebar-footer span {
+            display: none;
+        }
+
+        .sidebar.collapsed .logo-area {
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .sidebar.collapsed .menu-item {
+            justify-content: center;
+            padding: 15px 0;
+        }
+
+        .sidebar.collapsed .user-info {
+            justify-content: center;
+        }
+
+        .sidebar.collapsed .user-avatar {
+            margin: 0;
+        }
+
+        /* شعار السايدبار */
+        .sidebar .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            margin-bottom: 20px;
+        }
+
+        .sidebar .logo-area i {
+            font-size: 2.2rem;
+            color: #fbbf24;
+            filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.5));
+        }
+
+        .sidebar .logo-text {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(to left, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* زر طي السايدبار */
+        .toggle-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            width: 100%;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            border-radius: 0;
+            font-size: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: 0.2s;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* قائمة التنقل */
+        .nav-menu {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 0 15px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 18px;
+            border-radius: 18px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+
+        .menu-item i {
+            font-size: 1.3rem;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .menu-item:hover {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+
+        .menu-item.active {
+            background: rgba(251, 191, 36, 0.25);
+            color: #fbbf24;
+            border-right: 4px solid #fbbf24;
+        }
+
+        /* معلومات المستخدم في السايدبار */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+            margin-top: auto;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(145deg, #fbbf24, #f59e0b);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #1e293b;
+        }
+
+        .user-details {
+            overflow: hidden;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* ========== المحتوى الرئيسي ========== */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-wrapper {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* الشريط العلوي (محدث) */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            color: white;
+            padding: 0 10px;
+        }
+
+        .page-title h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(to left, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-badge {
+            background: rgba(0,0,0,0.3);
+            padding: 5px 20px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* باقي التصميم كما هو مع بعض التعديلات الطفيفة */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(5px);
+            padding: 25px 20px;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: 0.3s;
+            border: 1px solid white;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: white;
+        }
+
+        .stat-info h3 {
+            font-size: 1rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .stat-info .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            line-height: 1.2;
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            color: #667eea;
+            opacity: 0.7;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 10px 20px -8px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .btn-primary {
+            background: linear-gradient(145deg, #fbbf24, #f59e0b);
+            color: #1e293b;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(145deg, #f59e0b, #d97706);
+            transform: scale(1.02);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(145deg, #38bdf8, #0284c7);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(145deg, #0284c7, #0369a1);
+            transform: scale(1.02);
+        }
+
+        .pages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .page-card {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(8px);
+            border-radius: 35px;
+            padding: 25px;
+            box-shadow: 0 20px 40px -15px black;
+            border: 1px solid rgba(255,255,255,0.7);
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 2px solid #cbd5e1;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .page-header i {
+            font-size: 2rem;
+            color: #4f46e5;
+            background: rgba(255,255,255,0.6);
+            padding: 12px;
+            border-radius: 20px;
+        }
+
+        .page-header h2 {
+            font-size: 1.5rem;
+            color: #1e293b;
+        }
+
+        .add-student-form .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .input-field {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 50px;
+            padding: 0 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .input-field i {
+            color: #64748b;
+            margin-left: 10px;
+        }
+
+        .input-field input, .input-field select {
+            width: 100%;
+            padding: 14px 0;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            background: transparent;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .btn-submit {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #059669;
+        }
+
+        .courses-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .course-item {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+
+        .course-info h4 {
+            font-size: 1.1rem;
+            color: #0f172a;
+        }
+
+        .course-info p {
+            font-size: 0.8rem;
+            color: #475569;
+        }
+
+        .open-course-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .open-course-btn:hover {
+            background: #2563eb;
+        }
+
+        .table-section {
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(8px);
+            border-radius: 40px;
+            padding: 25px;
+            margin-top: 15px;
+            border: 1px solid white;
+        }
+
+        .table-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-excel, .btn-pdf {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .btn-excel {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-excel:hover {
+            background: #15803d;
+        }
+
+        .btn-pdf {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-pdf:hover {
+            background: #b91c1c;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 40px;
+            padding: 0 20px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .search-box i {
+            color: #64748b;
+        }
+
+        .search-box input {
+            padding: 12px 15px;
+            border: none;
+            outline: none;
+            width: 240px;
+            font-size: 0.95rem;
+            background: transparent;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 30px;
+            background: white;
+            padding: 5px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+
+        th {
+            background: #f1f5f9;
+            padding: 18px 12px;
+            font-weight: 600;
+            color: #334155;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #1e293b;
+        }
+
+        .badge {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 5px 10px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        /* Toast Message */
+        .toast-msg {
+            visibility: hidden;
+            min-width: 250px;
+            background: #1e293b;
+            color: white;
+            text-align: center;
+            border-radius: 50px;
+            padding: 16px;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            box-shadow: 0 10px 25px black;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast-msg.show {
+            visibility: visible;
+            animation: fadein 0.3s, fadeout 0.3s 2.5s;
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+
+        /* ===== تجاوب الموبايل مع السايدبار ===== */
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                right: -280px;
+                top: 0;
+                height: 100vh;
+                z-index: 1000;
+                transition: 0.3s;
+            }
+            
+            .sidebar.mobile-open {
+                right: 0;
+            }
+            
+            .sidebar.collapsed {
+                width: 85px;
+                right: -85px;
+            }
+            
+            .sidebar.collapsed.mobile-open {
+                right: 0;
+            }
+            
+            .main-content {
+                width: 100%;
+            }
+            
+            /* زر فتح القائمة للموبايل */
+            .mobile-menu-toggle {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                width: 45px;
+                height: 45px;
+                background: rgba(255,255,255,0.2);
+                border-radius: 15px;
+                color: white;
+                font-size: 1.5rem;
+                cursor: pointer;
+                backdrop-filter: blur(5px);
+                border: 1px solid rgba(255,255,255,0.3);
+            }
+        }
+
+        @media (min-width: 993px) {
+            .mobile-menu-toggle {
+                display: none !important;
+            }
+        }
+
+        /* تحسينات للموبايل */
+        @media (max-width: 600px) {
+            .dashboard-wrapper {
+                padding: 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+            
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .page-title h2 {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* زر فتح القائمة للموبايل */
+        .mobile-menu-toggle {
+            display: none;
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- ===== السايدبار ===== -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo-area">
+                <i class="fas fa-graduation-cap"></i>
+                <span class="logo-text">شئون طلاب MIS</span>
+            </div>
+            
+            <button class="toggle-btn" id="toggleSidebarBtn">
+                <i class="fas fa-chevron-right" id="toggleIcon"></i>
+                <span class="menu-text">تصغير القائمة</span>
+            </button>
+            
+            <nav class="nav-menu">
+                <a href="#" class="menu-item active">
+                    <i class="fas fa-home"></i>
+                    <span class="menu-text">الرئيسية</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span class="menu-text">الطلاب</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-book-open"></i>
+                    <span class="menu-text">المقررات</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-chalkboard-user"></i>
+                    <span class="menu-text">أعضاء هيئة التدريس</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span class="menu-text">التقارير</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span class="menu-text">الإعدادات</span>
+                </a>
+            </nav>
+            
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-details">
+                    <div class="user-name">أ. نادية أحمد</div>
+                    <div class="user-role">مدير النظام</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ===== المحتوى الرئيسي ===== -->
+        <main class="main-content">
+            <!-- زر فتح القائمة للموبايل -->
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="dashboard-wrapper">
+                <!-- الشريط العلوي -->
+                <div class="top-bar">
+                    <div class="page-title">
+                        <h2><i class="fas fa-tachometer-alt"></i> لوحة التحكم</h2>
+                    </div>
+                    <div class="date-badge">
+                        <i class="far fa-calendar-alt"></i> 2025-02-18
+                    </div>
+                </div>
+
+                <!-- بطاقات إحصائية -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>إجمالي الطلاب</h3>
+                            <span class="number">٢٬٤٥٠</span>
+                        </div>
+                        <i class="fas fa-users stat-icon"></i>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>المقررات النشطة</h3>
+                            <span class="number">٨٩</span>
+                        </div>
+                        <i class="fas fa-book-open stat-icon"></i>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>هيئة تدريس</h3>
+                            <span class="number">١٢٤</span>
+                        </div>
+                        <i class="fas fa-chalkboard-user stat-icon"></i>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>المالية (بآلاف)</h3>
+                            <span class="number">٦٬٧٨٠</span>
+                        </div>
+                        <i class="fas fa-coins stat-icon"></i>
+                    </div>
+                </div>
+
+                <!-- أزرار سريعة -->
+                <div class="action-buttons">
+                    <button class="btn-primary" id="showAddStudentCardBtn"><i class="fas fa-user-plus"></i> إضافة طالب جديد</button>
+                    <button class="btn-secondary" id="showCoursesCardBtn"><i class="fas fa-folder-open"></i> فتح مقررات دراسية</button>
+                </div>
+
+                <!-- صفحات مصغرة -->
+                <div class="pages-grid" id="pagesGrid">
+                    <!-- بطاقة إضافة طالب -->
+                    <div class="page-card" id="addStudentPage">
+                        <div class="page-header">
+                            <i class="fas fa-user-graduate"></i>
+                            <h2>إضافة طالب</h2>
+                        </div>
+                        <div class="add-student-form">
+                            <div class="form-row">
+                                <div class="input-field">
+                                    <i class="fas fa-id-card"></i>
+                                    <input type="text" placeholder="الرقم الجامعي" id="studentId">
+                                </div>
+                                <div class="input-field">
+                                    <i class="fas fa-user"></i>
+                                    <input type="text" placeholder="الاسم الكامل" id="studentName">
+                                </div>
+                                <div class="input-field">
+                                    <i class="fas fa-envelope"></i>
+                                    <input type="email" placeholder="البريد الإلكتروني" id="studentEmail">
+                                </div>
+                                <div class="input-field">
+                                    <i class="fas fa-book"></i>
+                                    <select id="studentCourse">
+                                        <option>علوم الحاسب</option>
+                                        <option>نظم المعلومات</option>
+                                        <option>ذكاء اصطناعي</option>
+                                        <option>هندسة برمجيات</option>
+                                    </select>
+                                </div>
+                                <button class="btn-submit" id="addStudentBtn"><i class="fas fa-save"></i> حفظ الطالب</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- بطاقة فتح مقررات -->
+                    <div class="page-card" id="coursesPage">
+                        <div class="page-header">
+                            <i class="fas fa-book"></i>
+                            <h2>المقررات المفتوحة</h2>
+                        </div>
+                        <div class="courses-list">
+                            <div class="course-item">
+                                <div class="course-info">
+                                    <h4>تحليل وتصميم نظم</h4>
+                                    <p>كود: SAD301 | 3 وحدات</p>
+                                </div>
+                                <button class="open-course-btn" onclick="window.toast('تم فتح مقرر SAD301')"><i class="fas fa-external-link-alt"></i> فتح</button>
+                            </div>
+                            <div class="course-item">
+                                <div class="course-info">
+                                    <h4>قواعد بيانات متقدمة</h4>
+                                    <p>كود: DB402 | 4 وحدات</p>
+                                </div>
+                                <button class="open-course-btn" onclick="window.toast('تم فتح مقرر DB402')"><i class="fas fa-external-link-alt"></i> فتح</button>
+                            </div>
+                            <div class="course-item">
+                                <div class="course-info">
+                                    <h4>أمن المعلومات</h4>
+                                    <p>كود: SEC203 | 3 وحدات</p>
+                                </div>
+                                <button class="open-course-btn" onclick="window.toast('تم فتح مقرر SEC203')"><i class="fas fa-external-link-alt"></i> فتح</button>
+                            </div>
+                            <div class="course-item">
+                                <div class="course-info">
+                                    <h4>الذكاء الاصطناعي</h4>
+                                    <p>كود: AI305 | 3 وحدات</p>
+                                </div>
+                                <button class="open-course-btn" onclick="window.toast('تم فتح مقرر AI305')"><i class="fas fa-external-link-alt"></i> فتح</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- داتا تيبل مع تصدير -->
+                <div class="table-section">
+                    <div class="table-toolbar">
+                        <div class="toolbar-actions">
+                            <button class="btn-excel" id="exportExcelBtn"><i class="fas fa-file-excel"></i> تصدير إكسل</button>
+                            <button class="btn-pdf" id="printPdfBtn"><i class="fas fa-file-pdf"></i> طباعة PDF (عربي)</button>
+                        </div>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="بحث في الجدول..." id="tableSearch">
+                        </div>
+                    </div>
+                    <div class="table-responsive" id="studentsTableContainer">
+                        <table id="studentsTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>الرقم الجامعي</th>
+                                    <th>الاسم</th>
+                                    <th>البريد الإلكتروني</th>
+                                    <th>القسم</th>
+                                    <th>الحالة</th>
+                                    <th>المعدل</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Message -->
+    <div id="toastMessage" class="toast-msg">
+        <i class="fas fa-check-circle" style="color:#4ade80;"></i> 
+        <span id="toastText"></span>
+    </div>
+
+    <script>
+        (function() {
+            // بيانات الطلاب
+            const studentsData = [
+                { id: '20231001', name: 'أحمد محمد عبدالله', email: 'ahmed@uni.edu', dept: 'علوم حاسب', status: 'نشط', gpa: '3.75' },
+                { id: '20231002', name: 'سارة خالد السيد', email: 'sara@uni.edu', dept: 'نظم معلومات', status: 'نشط', gpa: '3.90' },
+                { id: '20231003', name: 'محمد عمر العمري', email: 'm.omar@uni.edu', dept: 'هندسة برمجيات', status: 'موقف', gpa: '2.80' },
+                { id: '20231004', name: 'نورة أحمد الزهراني', email: 'nora@uni.edu', dept: 'ذكاء اصطناعي', status: 'نشط', gpa: '3.60' },
+                { id: '20231005', name: 'يوسف علي بامخرمة', email: 'yousef@uni.edu', dept: 'أمن سيبراني', status: 'نشط', gpa: '3.45' },
+                { id: '20231006', name: 'لمى فيصل الدوسري', email: 'lama@uni.edu', dept: 'نظم معلومات', status: 'متخرج', gpa: '3.95' },
+                { id: '20231007', name: 'عبدالله إبراهيم ناصر', email: 'abullah@uni.edu', dept: 'علوم حاسب', status: 'نشط', gpa: '3.30' }
+            ];
+
+            // دالة عرض الجدول
+            function renderTable(data) {
+                const tbody = document.getElementById('tableBody');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+                data.forEach((stu, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index+1}</td>
+                        <td><span class="badge">${stu.id}</span></td>
+                        <td>${stu.name}</td>
+                        <td>${stu.email}</td>
+                        <td>${stu.dept}</td>
+                        <td><span class="status-active">${stu.status}</span></td>
+                        <td><strong>${stu.gpa}</strong></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            renderTable(studentsData);
+
+            // Toast function
+            window.toast = function(msg) {
+                const toast = document.getElementById('toastMessage');
+                const toastSpan = document.getElementById('toastText');
+                toastSpan.innerText = msg;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2800);
+            };
+
+            // البحث في الجدول
+            document.getElementById('tableSearch')?.addEventListener('input', function(e) {
+                const term = e.target.value.toLowerCase();
+                const filtered = studentsData.filter(s => 
+                    s.name.toLowerCase().includes(term) || 
+                    s.id.includes(term) || 
+                    s.email.toLowerCase().includes(term) ||
+                    s.dept.toLowerCase().includes(term)
+                );
+                renderTable(filtered);
+            });
+
+            // إضافة طالب
+            document.getElementById('addStudentBtn')?.addEventListener('click', function() {
+                const id = document.getElementById('studentId')?.value.trim();
+                const name = document.getElementById('studentName')?.value.trim();
+                const email = document.getElementById('studentEmail')?.value.trim();
+                const course = document.getElementById('studentCourse')?.value;
+                if (!id || !name || !email) {
+                    window.toast('الرجاء ملء جميع الحقول');
+                    return;
+                }
+                const newStudent = {
+                    id: id,
+                    name: name,
+                    email: email,
+                    dept: course || 'عام',
+                    status: 'نشط',
+                    gpa: '--'
+                };
+                studentsData.unshift(newStudent);
+                renderTable(studentsData);
+                window.toast(`تم إضافة الطالب: ${name}`);
+                document.getElementById('studentId').value = '';
+                document.getElementById('studentName').value = '';
+                document.getElementById('studentEmail').value = '';
+            });
+
+            // تصدير إكسل
+            document.getElementById('exportExcelBtn')?.addEventListener('click', function() {
+                const table = document.getElementById('studentsTable');
+                const wb = XLSX.utils.table_to_book(table, { sheet: "الطلاب", raw: true });
+                XLSX.writeFile(wb, "طلاب_شئون_طلاب.xlsx");
+                window.toast('تم تصدير ملف إكسل بنجاح');
+            });
+
+            // طباعة PDF
+            document.getElementById('printPdfBtn')?.addEventListener('click', function() {
+                const tableContainer = document.getElementById('studentsTableContainer');
+                const element = tableContainer.cloneNode(true);
+                const headerDiv = document.createElement('div');
+                headerDiv.style.textAlign = 'center';
+                headerDiv.style.fontSize = '24px';
+                headerDiv.style.fontWeight = 'bold';
+                headerDiv.style.marginBottom = '20px';
+                headerDiv.style.padding = '15px';
+                headerDiv.style.background = '#f3f4f6';
+                headerDiv.style.borderRadius = '20px';
+                headerDiv.innerText = 'قائمة الطلاب - نظام شئون الطلاب';
+                element.prepend(headerDiv);
+
+                const opt = {
+                    margin: [0.5, 0.5, 0.5, 0.5],
+                    filename: 'طلاب_شئون_طلاب.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+                    jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+                };
+                html2pdf().set(opt).from(element).save();
+                window.toast('جاري إنشاء PDF عربي ...');
+            });
+
+            // التمرير للبطاقات
+            document.getElementById('showAddStudentCardBtn')?.addEventListener('click', function() {
+                document.getElementById('addStudentPage').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+            document.getElementById('showCoursesCardBtn')?.addEventListener('click', function() {
+                document.getElementById('coursesPage').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+
+            // ===== وظائف السايدبار =====
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('toggleSidebarBtn');
+            const toggleIcon = document.getElementById('toggleIcon');
+            const mobileToggle = document.getElementById('mobileMenuToggle');
+
+            // طي/توسيع السايدبار
+            toggleBtn?.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                if (sidebar.classList.contains('collapsed')) {
+                    toggleIcon.className = 'fas fa-chevron-left';
+                    toggleBtn.querySelector('.menu-text').textContent = 'توسيع القائمة';
+                } else {
+                    toggleIcon.className = 'fas fa-chevron-right';
+                    toggleBtn.querySelector('.menu-text').textContent = 'تصغير القائمة';
+                }
+            });
+
+            // فتح/غلق السايدبار في الموبايل
+            mobileToggle?.addEventListener('click', function() {
+                sidebar.classList.toggle('mobile-open');
+            });
+
+            // إغلاق السايدبار عند النقر خارجه في الموبايل
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 992) {
+                    const isClickInsideSidebar = sidebar.contains(event.target);
+                    const isClickOnToggle = mobileToggle.contains(event.target);
+                    
+                    if (!isClickInsideSidebar && !isClickOnToggle && sidebar.classList.contains('mobile-open')) {
+                        sidebar.classList.remove('mobile-open');
+                    }
+                }
+            });
+
+            // تحديث أيقونة التوجيه عند تغيير حجم الشاشة
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 992) {
+                    sidebar.classList.remove('mobile-open');
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
